@@ -1,0 +1,15 @@
+{
+  "name": "pmi-reg-automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^22.15.23"
+  }
+}
