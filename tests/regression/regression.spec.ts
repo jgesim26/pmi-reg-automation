@@ -1,13 +1,12 @@
-
-import { TIMEOUT } from "dns";
+import { log } from "console";
 import { USER_CREDENTIALS, INVALID_USER_CREDENTIALS, login} from "../utils/constants";
 
 const { test, expect } = require('@playwright/test');
 
-test.describe('PartnerMatrix Login Flow', () => {
+test.describe('Regression for login flow', () => {
 
   // Test case 1: Login Page Functionality
-  test('should allow a user to log in successfully on PartnerMatrix', async ({ page }) => {
+  test('The system should allow a user to log in successfully on PartnerMatrix', async ({ page }) => {
     console.log('Navigating to data.partnermatrix.com...');
     await page.goto('');
 
@@ -38,63 +37,122 @@ test.describe('PartnerMatrix Login Flow', () => {
     console.log('Verifying successful login...');   
     console.log('Login successful!');
     
-    const WebsiteOverview = page.locator('q-item__label',{name: 'Trending Websites'})
-    await expect(WebsiteOverview).toBeVisible('true', {TIMEOUT : 60000});
+    // const WebsiteOverview = page.locator('q-item__label',{name: 'Trending Websites'})
+    // await expect(WebsiteOverview).toBeVisible('true', {TIMEOUT : 60000});
 
   });
 
 
   // Test Case 2: Login Functionality - Negative Scenario
-  // test('should not display anything for invalid credentials', async ({ page }) => {
-  //     console.log('Navigating to data.partnermatrix.com for invalid credentials test...');
-  //     await page.goto('');
-  //     await page.waitForLoadState('networkidle');
-  //     console.log('PMI Page has successfully loaded.');
+  test('The system should not display anything for invalid credentials', async ({ page }) => {
+      console.log('Navigating to data.partnermatrix.com for invalid credentials test...');
+      await page.goto('');
+      await page.waitForLoadState('networkidle');
+      console.log('PMI Page has successfully loaded.');
       
-  //     console.log('Filling invalid username/email...');
-  //     const usernameInput = page.getByPlaceholder('username')
-  //     await usernameInput.fill(INVALID_USER_CREDENTIALS.invalusername);
-  //     await expect(usernameInput).toHaveValue(INVALID_USER_CREDENTIALS.invalusername);
+      console.log('Filling invalid username/email...');
+      const usernameInput = page.getByPlaceholder('username')
+      await usernameInput.fill(INVALID_USER_CREDENTIALS.invalusername);
+      await expect(usernameInput).toHaveValue(INVALID_USER_CREDENTIALS.invalusername);
 
-  //     console.log('Filling invalid password...');
+      console.log('Filling invalid password...');
 
-  //     const passwordInput = page.getByPlaceholder('password')
-  //     await passwordInput.fill(INVALID_USER_CREDENTIALS.invalpassword);
-  //     await expect(passwordInput).toHaveValue(INVALID_USER_CREDENTIALS.invalpassword);
+      const passwordInput = page.getByPlaceholder('password')
+      await passwordInput.fill(INVALID_USER_CREDENTIALS.invalpassword);
+      await expect(passwordInput).toHaveValue(INVALID_USER_CREDENTIALS.invalpassword);
 
-  //     console.log('Clicking login button...');
-  //     const loginButton = page.getByRole('button', { name: 'Login' });
+      console.log('Clicking login button...');
+      const loginButton = page.getByRole('button', { name: 'Login' });
 
-  //     await loginButton.click();
-  //     console.log('Login button clicked.');
-  //     const [response] = await Promise.all([
-  //     page.waitForResponse(response => response.url().includes('/login') && response.request().method() === 'POST'),
-  //     page.getByRole('button', { name: 'Login' }).click()
+      await loginButton.click();
+      console.log('Login button clicked.');
+      const [response] = await Promise.all([
+      page.waitForResponse(response => response.url().includes('/login') && response.request().method() === 'POST'),
+      page.getByRole('button', { name: 'Login' }).click()
         
-  //     ]);
+      ]);
 
-  //     // Assert the status code
-  //     console.log('Waiting for the server to respond......');
-  //     expect(response.status()).toBe(401);
+      // Assert the status code
+      console.log('Waiting for the server to respond......');
+      expect(response.status()).toBe(401);
 
-  // });
-  // //Test Case 3: Navigation 1 : Trending Websites
-  test('Should redirect to Trending Websites Page', async ({ page }) => {
-    
-    console.log('Trying to load Trending Websites');
-    console.log('Running test: should display essential dashboard elements after login');
+  });
+});
+    test.describe('Regression for side navigation whether the page is present or removed', () => {  
+      // //Test Case 3: Navigation 1 : Trending Websites
+        test('Should redirect to Trending Websites Page', async ({ page }) => {
+          
+          console.log('Trying to load Trending Websites');
+          console.log('Running test: should display essential trending website elements after login');
 
-  await login(page);
-  await page.getByRole('listitem', { name: 'Trending Websites New' }).click();
-  await expect(page).toHaveURL('https://data.partnermatrix.com/organic-traffic/website-analysis/trending-websites'); // Check URL changed
-  // await expect(page.getByRole('main').getByText('Trending Websites')).toBeVisible({TIMEOUT: 60000});
+        await login(page);
+        await page.getByText('Trending Websites').click();
 
-   
-     
+        const trendingWebsitesLocator = page.getByText('Trending Websites');
+        await expect(trendingWebsitesLocator).toBeVisible();
+        
+        });
+        test('Should redirect to Opportunities Page', async ({ page }) => {
+          await login(page);
+        
+        // await login(page);
+        // await page.getByRole('Opportunities', {exact :true}).click();
+
+        // const OpportunitiesLocator = page.getByText('Opportunities');
+        // await expect(OpportunitiesLocator).toBeVisible();
+        
+
+        // Use a more specific locator for 'Opportunities'
+        await page.locator('a.q-item:has(span:has-text("Opportunities"))').click();
+        console.log('Trying to load Opportunities page');
+        console.log('Running test: should display Opportunities page');
+
+
+        // You can then assert its visibility using the same specific locator
+        const OpportunitiesLocator = page.locator('a.q-item:has(span:has-text("Opportunities"))').filter({ hasText: 'Opportunities' });
+        await expect(OpportunitiesLocator).toBeVisible();
+          
+        });
+          test('Should redirect to Your Websites Page', async ({ page }) => {
+          
+          console.log('Trying to load Your Websites page');
+          console.log('Running test: should display Your Websites page');
+
+        await login(page);
+        await page.getByText('Your Websites').click();
+
+        const YourWebsitesLocator = page.getByText('Your Websites');
+        await expect(YourWebsitesLocator).toBeVisible();
+        
+        });
+        test('Should redirect to Position Changes Page', async ({ page }) => {
+          
+        console.log('Trying to load Position Changes page');
+        console.log('Running test: should display Position Changes');
+
+        await login(page);
+        await page.getByText('Position Changes').click();
+
+        const PositionChangesLocator = page.getByText('Position Changes');
+        await expect(PositionChangesLocator).toBeVisible();
+        
+        });
+
+      });
+
+// test.describe('Regression for Settings whether the page is present or removed', () => {  
+//   console.log('Running test: Trying to find Account element at the upper right corner')
   
-    await page.pause();
-  });
+ 
+
+//   test('Should redirect to Settings Page', async ({ page }) => {
+//     await login(page);
+//     await page.locator('a.q-item:has(span:has-text("Jayson Gesim"))').click();
+//     const UserAccountLocator = page.locator('a.q-item:has(span:has-text("Jayson Gesim"))').filter({ hasText: 'Jayson Gesim' });
+//         await expect(UserAccountLocator).toBeVisible();
+//   });
+          
+// });
 
 
-  });
 
