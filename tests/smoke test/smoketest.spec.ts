@@ -88,9 +88,7 @@ test.describe('Verification for for login flow', () => {
 
         await login(page);
         await page.getByText('Trending Websites').click();
-
-        const trendingWebsitesLocator = page.getByText('Trending Websites');
-        await expect(trendingWebsitesLocator).toBeVisible();
+        await expect(page.getByText('Trending Websites')).toBeVisible();
         
         });
         test('Should redirect to Opportunities Page', async ({ page }) => {
