@@ -1,9 +1,10 @@
 import { log } from "console";
 import { USER_CREDENTIALS, INVALID_USER_CREDENTIALS, login} from "../utils/constants";
+import { TIMEOUT } from "dns";
 
 const { test, expect } = require('@playwright/test');
 
-test.describe('Regression for login flow', () => {
+test.describe('Verification for for login flow', () => {
 
   // Test case 1: Login Page Functionality
   test('The system should allow a user to log in successfully on PartnerMatrix', async ({ page }) => {
@@ -78,7 +79,7 @@ test.describe('Regression for login flow', () => {
 
   });
 });
-    test.describe('Regression for side navigation whether the page is present or removed', () => {  
+    test.describe('Verification for for side navigation whether the page is present or removed', () => {  
       // //Test Case 3: Navigation 1 : Trending Websites
         test('Should redirect to Trending Websites Page', async ({ page }) => {
           
@@ -105,7 +106,7 @@ test.describe('Regression for login flow', () => {
         // Use a more specific locator for 'Opportunities'
         await page.locator('a.q-item:has(span:has-text("Opportunities"))').click();
         console.log('Trying to load Opportunities page');
-        console.log('Running test: should display Opportunities page');
+        console.log('Running test: it should display Opportunities page');
 
 
         // You can then assert its visibility using the same specific locator
@@ -116,7 +117,7 @@ test.describe('Regression for login flow', () => {
           test('Should redirect to Your Websites Page', async ({ page }) => {
           
           console.log('Trying to load Your Websites page');
-          console.log('Running test: should display Your Websites page');
+          console.log('Running test: it should display Your Websites page');
 
         await login(page);
         await page.getByText('Your Websites').click();
@@ -128,31 +129,75 @@ test.describe('Regression for login flow', () => {
         test('Should redirect to Position Changes Page', async ({ page }) => {
           
         console.log('Trying to load Position Changes page');
-        console.log('Running test: should display Position Changes');
+        console.log('Running test: it should display Position Changes page');
 
         await login(page);
         await page.getByText('Position Changes').click();
-
-        const PositionChangesLocator = page.getByText('Position Changes');
-        await expect(PositionChangesLocator).toBeVisible();
+        await expect(page.getByText('Position Changes')).toBeVisible();
         
         });
 
       });
+ //  Market Research > Website Search   
+test.describe('', () => { 
+  test('Should redirect to Settings Page', async ({ page }) => {
 
-// test.describe('Regression for Settings whether the page is present or removed', () => {  
-//   console.log('Running test: Trying to find Account element at the upper right corner')
+  });
+});
+
+
+// PPC
+test.describe('Verify if side navs are present and visible', () => {  
+  console.log('Running test: Trying to find PPC and its sub nav menu');
   
  
 
-//   test('Should redirect to Settings Page', async ({ page }) => {
-//     await login(page);
-//     await page.locator('a.q-item:has(span:has-text("Jayson Gesim"))').click();
-//     const UserAccountLocator = page.locator('a.q-item:has(span:has-text("Jayson Gesim"))').filter({ hasText: 'Jayson Gesim' });
-//         await expect(UserAccountLocator).toBeVisible();
-//   });
+  test('PPC dropdown should expand', async ({ page }) => {
+    await login(page);
+    await page.waitForLoadState('networkidle');
+    await page.getByText('PPC').click({TIMEOUT: 60000});
+    await expect(page.getByText('PPC')).toBeVisible();
+    
+  });
+  test('Verify if Websiite Top List exists', async ({ page }) => {
+    await login(page);
+    await page.getByText('PPC').click({TIMEOUT: 60000});
+    await expect(page.getByText('PPC')).toBeVisible();
+    await page.getByText('Website Top List').click();
+    await expect(page.getByText('Website Top List')).toBeVisible();
+      
+  });
+  test('Verify if Keyword list List exists', async ({ page }) => {
+  await login(page);
+  await page.waitForLoadState('networkidle');
+  await page.getByText('PPC').click({TIMEOUT: 60000});
+  await expect(page.getByText('PPC')).toBeVisible();
+  await page.getByText('Keyword List').click({TIMEOUT: 60000});
+  await expect(page.getByText('Keyword List')).toBeVisible();
+      
+  });
+  test('Verify if Black Hat List exists', async ({ page }) => {
+  await login(page);
+  await page.waitForLoadState('networkidle');
+  await page.getByText('PPC').click({TIMEOUT: 60000});
+  await expect(page.getByText('PPC')).toBeVisible();
+  await page.getByText('Black Hat').click({TIMEOUT: 60000});
+  await expect(page.getByText('Black Hat')).toBeVisible();
+      
+  });
+  test('Verify if Brand Bidding exists', async ({ page }) => {
+  await login(page);
+  await page.waitForLoadState('networkidle');
+  await page.getByText('PPC').click({TIMEOUT: 60000});
+  await expect(page.getByText('PPC')).toBeVisible();
+  await page.getByText('Brand Bidding').click({TIMEOUT: 60000});
+  await expect(page.getByText('Brand Bidding')).toBeVisible();
+      
+  });
+        
+        
           
-// });
+});
 
 
 
