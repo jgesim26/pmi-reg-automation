@@ -1,4 +1,4 @@
-# pmi-reg-automation
+## pmi-reg-automation
 Ths is for PMI Website FE automation regressing testing
 
 ## Command to execute and run specific test file
@@ -15,7 +15,7 @@ npx playwright show-report
 
 
 
-# Integrating Playwright TypeScript tests into a GitLab CI/CD pipeline is a common and effective way to automate your end-to-end testing. Here's a step-by-step guide to help you set it up:
+## Integrating Playwright TypeScript tests into a GitLab CI/CD pipeline is a common and effective way to automate your end-to-end testing. Here's a step-by-step guide to help you set it up:
 
 Prerequisites:
 
