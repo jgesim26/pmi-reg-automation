@@ -1,5 +1,4 @@
-
-import { USER_CREDENTIALS, login} from "../utils/constants";
+import {login} from "../utils/constants";
 
 const { test, expect } = require('@playwright/test');
 
