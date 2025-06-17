@@ -12,13 +12,17 @@ test.describe('Verify if high level navigation are working as expected', () => {
   
 
     console.log('Login button clicked.');
-    console.log('Verifying successful login...');   
-    console.log('Login successful!');
+    console.log('Verifying successful login and redirection...');  
+     
+    await expect(page).toHaveURL(/.*\/organic-traffic\/website-analysis\/website-overview/);
+    console.log('Successfully redirected to /organic-traffic/website-analysis/website-overview');
+    
+    console.log('User is logged in successfully and redirected to Website Overview page!');
 
     console.log('Trying to load Trending Websites');
     console.log('Running test: should display essential trending website elements after login');
-    await page.getByText('Trending Websites').click();
-    await expect(page.getByText('Trending Websites', {exact : true})).toBeVisible();
+   await page.locator('a.q-item:has(span:has-text("Trending Websites"))').click();
+    await expect(page.getByRole('main').getByText('Trending Websites', {exact : true})).toBeVisible();
 
     await page.locator('a.q-item:has(span:has-text("Opportunities"))').click();
         console.log('Trying to load Opportunities page');
@@ -106,10 +110,13 @@ test.describe('Verify if high level navigation are working as expected', () => {
       
       
       
-      
-    
-
- 
-  
+   // Accessing account page settings
+   
+    console.log('Preparing to load Account settings');
+    async function clickAvatarButtonDirectly(page) {
+     const avatarButton = page.locator('button.q-btn--round.q-btn--dense:has(i.fa-solid.fa-user)');
+      await avatarButton.click();
+      await expect (page.locator('button.q-btn--round.q-btn--dense:has(i.fa-solid.fa-user)')).toBeVisible();
+        }
   });
 });
