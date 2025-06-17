@@ -1,0 +1,58 @@
+# .github/workflows/playwright.yml
+
+name: Playwright Tests
+
+on:
+  push:
+    branches: [ main, master, develop ] # Trigger on push to these branches
+  pull_request:
+    branches: [ main, master, develop ] # Trigger on pull request to these branches
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+  schedule:
+    - cron: '0 0 * * *' # Optional: Run daily at midnight UTC
+
+jobs:
+  test:
+    timeout-minutes: 60 # Set a timeout for the entire job
+    runs-on: ubuntu-latest # Specify the runner environment (Linux, Windows, macOS)
+    
+    # Optional: Define strategy for running tests in parallel across different browsers
+    strategy:
+      fail-fast: false # Don't fail the whole job immediately if one browser fails
+      matrix:
+        # browser: [chromium, firefox, webkit] # Run tests on all three browsers
+        browser: [chromium] # For faster feedback, start with one browser
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4 # Action to check out your code
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20 # Use a specific Node.js version (e.g., 18, 20, 22)
+        cache: 'npm' # Cache npm dependencies for faster builds
+        cache-dependency-path: '**/package-lock.json' # Path to lock file
+
+    - name: Install dependencies
+      run: npm ci # Use npm ci for clean installs in CI environments
+
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps # Install all necessary browser binaries and their dependencies
+
+    - name: Run Playwright tests
+      run: npx playwright test # Command to run your tests
+      env:
+        # Example environment variables (replace with your actual secrets if needed)
+        PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }} 
+        https://gemini.google.com/app/ca2b98dea7ab4a84
+        # You might need other env variables for login credentials etc.
+        # e.g., PM_USERNAME: ${{ secrets.PM_USERNAME }}
+
+    - name: Upload Playwright test results
+      if: always() # Upload artifacts even if the previous step failed
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report-${{ matrix.browser }} # Name the report based on the browser
+        path: playwright-report/ # Path to Playwright's default report directory
+        retention-days: 5 # How long to keep the artifact
