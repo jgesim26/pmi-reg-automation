@@ -3,7 +3,7 @@ import { USER_CREDENTIALS, login} from "../utils/constants";
 
 const { test, expect } = require('@playwright/test');
 
-test.describe('Verification for login flow', () => {
+test.describe('Verify if high level navigation are working as expected', () => {
 
   // Test case 1: Login Flow
   test('The system should allow a user to log in successfully on PartnerMatrix', async ({ page }) => {
