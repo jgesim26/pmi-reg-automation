@@ -1,6 +1,6 @@
 # .github/workflows/playwright.yml
 
-name: Playwright Tests
+name: PMI Smoke Testing
 
 on:
   push:
@@ -41,13 +41,13 @@ jobs:
       run: npx playwright install --with-deps # Install all necessary browser binaries and their dependencies
 
     - name: Run Playwright tests
-      run: npx playwright test # Command to run your tests
+      run: npx playwright test smoketest.spec.ts  # Command to run your tests
       env:
         # Example environment variables (replace with your actual secrets if needed)
-        PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }} 
-        https://gemini.google.com/app/ca2b98dea7ab4a84
+        PLAYWRIGHT_BASE_URL: ${{ secrets.GITHUB_TOKEN.PLAYWRIGHT_BASE_URL }} 
         # You might need other env variables for login credentials etc.
-        # e.g., PM_USERNAME: ${{ secrets.PM_USERNAME }}
+        # e.g., PM_USERNAME: ${{ secrets.PM_USERNAME }}         ${{ secrets.PM_PASSWORD }}
+                        
 
     - name: Upload Playwright test results
       if: always() # Upload artifacts even if the previous step failed
