@@ -16,7 +16,7 @@ test.describe('Verify if high level navigation are working as expected', () => {
      
     await expect(page).toHaveURL(/.*\/organic-traffic\/website-analysis\/website-overview/);
     console.log('Successfully redirected to /organic-traffic/website-analysis/website-overview');
-    
+
     console.log('User is logged in successfully and redirected to Website Overview page!');
 
     console.log('Trying to load Trending Websites');
@@ -112,11 +112,22 @@ test.describe('Verify if high level navigation are working as expected', () => {
       
    // Accessing account page settings
    
-    console.log('Preparing to load Account settings');
-    async function clickAvatarButtonDirectly(page) {
-     const avatarButton = page.locator('button.q-btn--round.q-btn--dense:has(i.fa-solid.fa-user)');
-      await avatarButton.click();
-      await expect (page.locator('button.q-btn--round.q-btn--dense:has(i.fa-solid.fa-user)')).toBeVisible();
-        }
+        console.log('Preparing to load Account settings');
+          
+            const accountDropDownExpand = await page.locator('span.fs-16.gt-sm:has-text("Jayson Gesim")');
+            // const accountDropDownExpand = await page.getByRole('button', {name: 'Jayson Gesim'});
+
+            await accountDropDownExpand.click();
+            
+              console.log('Account dropdown button clicked.');
+              console.log('Checking if the account settings is expanded')
+              await expect(accountDropDownExpand).toHaveAttribute('aria-expanded', 'true');     
+              console.log('Account Settings is expanded');
+
+              await page.getByRole('link', { name: 'Profile Settings' }).click();
+              await expect(page).toHaveURL(/.*\/settings\/profile-settings/);
+              await expect(page.getByText('Profile Settings', { exact: true })).toBeVisible();   
+        
+
   });
 });
