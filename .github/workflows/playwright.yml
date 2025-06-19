@@ -47,16 +47,6 @@ jobs:
         PLAYWRIGHT_BASE_URL: ${{ secrets.GITHUB_TOKEN.PLAYWRIGHT_BASE_URL }} 
         # You might need other env variables for login credentials etc.
         # e.g., PM_USERNAME: ${{ secrets.PM_USERNAME }}         ${{ secrets.PM_PASSWORD }}
-
-    # - name: Run Playwright tests
-    #   run: npx playwright test regression.spec.ts  # Command to run your tests
-    #   env:
-         
-    #     PLAYWRIGHT_BASE_URL: ${{ secrets.GITHUB_TOKEN.PLAYWRIGHT_BASE_URL }} 
-       
-    #     # e.g., PM_USERNAME: ${{ secrets.PM_USERNAME }}         ${{ secrets.PM_PASSWORD }}   
-                        
-
     - name: Upload Playwright test results
       if: always() # Upload artifacts even if the previous step failed
       uses: actions/upload-artifact@v4
