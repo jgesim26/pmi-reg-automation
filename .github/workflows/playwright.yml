@@ -42,12 +42,7 @@ jobs:
 
     - name: Run Playwright tests
       run: npx playwright test smoketest.spec.ts  # Command to run your tests
-      # env:
-        
-      #     PLAYWRIGHT_BASE_URL: ${{ secrets.GITHUB_TOKEN.PLAYWRIGHT_BASE_URL }} 
-      #     # You might need other env variables for login credentials etc.
-      #     PM_USERNAME: ${{ secrets.PM_USERNAME }}         
-      #     PM_PASSWORD: ${{ secrets.PM_PASSWORD }}
+   
 
     - name: Upload Playwright test results
       if: always() # Upload artifacts even if the previous step failed
