@@ -7,7 +7,7 @@ test.describe('Verify if high level navigation are working as expected', () => {
   // Test case 1: Login Flow
   test('The system should allow a user to log in successfully on PartnerMatrix', async ({ page }) => {
     console.log('Navigating to data.partnermatrix.com...');
-    await page.goto('');
+    await page.goto('/');
     await login(page);
   
 

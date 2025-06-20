@@ -27,7 +27,7 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://data.partnermatrix.com',
     // baseURL: 'https://stage.app.deepci.com/',
-     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://data.parntermatrix.com',
+     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://data.partnermatrix.com',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
