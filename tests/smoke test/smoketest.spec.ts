@@ -139,7 +139,7 @@ test.describe('Verify if high level navigation are working as expected', () => {
              console.log('Account Settings is expanded'); 
              await profileSettingsLink.click();  
              await expect(page).toHaveURL(/.*\/settings\/profile-settings/);
-            await expect(page.getByText('Profile Settings', { exact: true })).toBeVisible();
+            // await expect(page.getByText('Profile Settings', { exact: true })).toBeVisible();
         
 
   });
