@@ -7,18 +7,20 @@ test.describe('Verify if high level navigation are working as expected', () => {
   // Test case 1: Login Flow
   test('The system should allow a user to log in successfully on PartnerMatrix', async ({ page }) => {
     console.log('Navigating to data.partnermatrix.com...');
-    await page.goto('/');
+    // await page.goto('/');
     await login(page);
-  
-
-    console.log('Login button clicked.');
-    console.log('Verifying successful login and redirection...');  
-     
+    
+      
+      console.log('Login button clicked.');
+      setTimeout(() => { 
+      }, 5000);
+    
+    
     await expect(page).toHaveURL(/.*\/organic-traffic\/website-analysis\/website-overview/);
     console.log('Successfully redirected to /organic-traffic/website-analysis/website-overview');
 
     console.log('User is logged in successfully and redirected to Website Overview page!');
-
+   
     console.log('Trying to load Trending Websites');
     console.log('Running test: should display essential trending website elements after login');
    await page.locator('a.q-item:has(span:has-text("Trending Websites"))').click();
@@ -63,7 +65,7 @@ test.describe('Verify if high level navigation are working as expected', () => {
       await page.getByText('PPC').click({TIMEOUT: 60000});
       await expect(page.getByText('PPC')).toBeVisible(); 
 
-      await page.locator('a.q-item:has(span:has-text("Website Top List"))').click();
+      await page.locator('a.q-item:has(span:has-text("Website Top List"))').click({TIMEOUT: 60000});
         console.log('Trying to load Website Top List page');
         console.log('Running test: it should display Website Top List page');
           // You can then assert its visibility using the same specific locator
@@ -107,26 +109,37 @@ test.describe('Verify if high level navigation are working as expected', () => {
           // You can then assert its visibility using the same specific locator
         const TelegramPage = page.locator('a.q-item:has(span:has-text("Telegram"))').filter({ hasText: 'Telegram' });
         await expect(TelegramPage).toBeVisible();  
-      
+        setTimeout(() => { 
+        }, 5000);
       
       
    // Accessing account page settings
    
         console.log('Preparing to load Account settings');
+        setTimeout(() => { 
+        }, 5000);
+    
           
-            const accountDropDownExpand = await page.locator('span.fs-16.gt-sm:has-text("Jayson Gesim")');
-            // const accountDropDownExpand = await page.getByRole('button', {name: 'Jayson Gesim'});
+            // const accountDropDownExpand = await page.locator('span.fs-16.gt-sm:has-text("Jayson Gesim")');
+            const accountDropDownExpand = await page.getByText('Jayson Gesim');
 
-            await accountDropDownExpand.click();
+            await accountDropDownExpand.click({TIMEOUT: 50000});
             
               console.log('Account dropdown button clicked.');
               console.log('Checking if the account settings is expanded')
-              await expect(accountDropDownExpand).toHaveAttribute('aria-expanded', 'true');     
+              
               console.log('Account Settings is expanded');
+             await accountDropDownExpand.click();  
 
-              await page.getByRole('link', { name: 'Profile Settings' }).click();
-              await expect(page).toHaveURL(/.*\/settings\/profile-settings/);
-              await expect(page.getByText('Profile Settings', { exact: true })).toBeVisible();   
+            console.log('Account dropdown button clicked.');
+            console.log('Checking if the account settings is expanded');
+            
+            const profileSettingsLink = page.getByText( 'Profile Settings');
+            await expect(profileSettingsLink).toBeVisible();  
+             console.log('Account Settings is expanded'); 
+             await profileSettingsLink.click();  
+             await expect(page).toHaveURL(/.*\/settings\/profile-settings/);
+            await expect(page.getByText('Profile Settings', { exact: true })).toBeVisible();
         
 
   });

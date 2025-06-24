@@ -7,7 +7,8 @@ export async function login(page: Page, username?: string, password?: string) {
   await page.getByPlaceholder('username').fill(username || 'jayson.gesim@everymatrix.com');
   await page.getByPlaceholder('Password').fill(password || '123');
   await page.getByRole('button', { name: 'Login' }).click();
-  // await expect(page.getByText('Welcome,')).toBeVisible(); // Adjust based on your app's success message
+  setTimeout(() => { 
+    }, 5000);
 }
 
 export const USER_CREDENTIALS = {
