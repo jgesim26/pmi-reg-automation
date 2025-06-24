@@ -11,8 +11,9 @@ test.describe('Verify if high level navigation are working as expected', () => {
     await login(page);
     
       
-      console.log('Login button clicked.');
+      console.log('Login button is clicked.');
       setTimeout(() => { 
+      console.log('User is logged in successfully...');
       }, 5000);
     
     
@@ -136,11 +137,47 @@ test.describe('Verify if high level navigation are working as expected', () => {
             
             const profileSettingsLink = page.getByText( 'Profile Settings');
             await expect(profileSettingsLink).toBeVisible();  
-             console.log('Account Settings is expanded'); 
+             console.log('The page is redirected to Profile Settings page'); 
              await profileSettingsLink.click();  
              await expect(page).toHaveURL(/.*\/settings\/profile-settings/);
-            // await expect(page.getByText('Profile Settings', { exact: true })).toBeVisible();
+   
+           
+
+            const ManageAccountTab = page.getByText( 'Manage Account');
+            await expect(ManageAccountTab).toBeVisible();  
+            console.log('Manage Account tab is activated'); 
+            await ManageAccountTab.click();  
+            await expect(page).toHaveURL(/.*settings\/manage-account\/your-preference/);
+
+            const ActivityLogTab = page.getByText( 'Activity Log');
+            await expect(ActivityLogTab).toBeVisible();  
+            console.log('Activity Log tab is activated'); 
+            await ActivityLogTab.click();  
+            await expect(page).toHaveURL(/.*settings\/activity-log\/activities/);
+
+            const SecurityTab = page.getByText( 'Security');
+            await expect(SecurityTab).toBeVisible();  
+            setTimeout(() => { 
+              console.log('Activity Log tab is activated'); 
+            }, 5000);
         
+            await SecurityTab.click();  
+            await expect(page).toHaveURL(/.*settings\/activity-log\/activities/);
+
+
+
+  //Master Search : to see if the search bar is working 
+            await page
+            .getByPlaceholder('Search website or brand')
+            .fill('covers.com');
+
+
+
+         await page.pause();
+ 
+
+
+
 
   });
 });
