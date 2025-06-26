@@ -20,9 +20,9 @@ jobs:
     strategy:
       fail-fast: false # Don't fail the whole job immediately if one browser fails
       matrix:
-        # browser: [chromium, firefox, webkit] # Run tests on all three browsers
-        browser: [chromium] # For faster feedback, start with one browser
-        browser: [firefox]
+        browser: [chromium, firefox, webkit] # Run tests on all three browsers
+       # browser: [chromium] # For faster feedback, start with one browser
+      
 
     steps:
     - name: Checkout repository
