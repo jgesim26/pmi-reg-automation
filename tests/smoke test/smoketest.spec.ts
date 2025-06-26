@@ -172,12 +172,5 @@ test.describe('Verify if high level navigation are working as expected', () => {
             .fill('covers.com');
 
 
-
-         await page.pause();
- 
-
-
-
-
   });
 });

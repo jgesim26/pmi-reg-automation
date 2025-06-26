@@ -22,6 +22,7 @@ jobs:
       matrix:
         # browser: [chromium, firefox, webkit] # Run tests on all three browsers
         browser: [chromium] # For faster feedback, start with one browser
+        browser: [firefox]
 
     steps:
     - name: Checkout repository
