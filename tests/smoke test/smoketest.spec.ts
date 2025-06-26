@@ -24,7 +24,8 @@ test.describe('Verify if high level navigation are working as expected', () => {
    
     console.log('Trying to load Trending Websites');
     console.log('Running test: should display essential trending website elements after login');
-   await page.locator('a.q-item:has(span:has-text("Trending Websites"))').click();
+    // await page.locator('a.q-item:has(span:has-text("Trending Websites"))').click();
+    await page.getByText('Trending Websites',{exact: true}).click();
     await expect(page.getByRole('main').getByText('Trending Websites', {exact : true})).toBeVisible();
 
     await page.locator('a.q-item:has(span:has-text("Opportunities"))').click();
@@ -162,7 +163,7 @@ test.describe('Verify if high level navigation are working as expected', () => {
             }, 5000);
         
             await SecurityTab.click();  
-            await expect(page).toHaveURL(/.*settings\/activity-log\/activities/);
+            await expect(page).toHaveURL(/.*settings\/security/);
 
 
 
