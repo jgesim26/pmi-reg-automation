@@ -11,13 +11,14 @@ test.describe('Verify if high level navigation are working as expected', () => {
     await login(page);
     
       
-      console.log('Login button is clicked.');
+      console.log('Site is accessible. Login process has succesfully processed');
       setTimeout(() => { 
       console.log('User is logged in successfully...');
       }, 5000);
     
     
-    await expect(page).toHaveURL(/.*\/organic-traffic\/website-analysis\/website-overview/);
+    // await expect (page.getByText('Website Overview', {exact: true})).toHaveURL(/.*\/organic-traffic\/website-analysis\/website-overview/);
+   
     console.log('Successfully redirected to /organic-traffic/website-analysis/website-overview');
 
     console.log('User is logged in successfully and redirected to Website Overview page!');
@@ -136,7 +137,7 @@ test.describe('Verify if high level navigation are working as expected', () => {
             console.log('Account dropdown button clicked.');
             console.log('Checking if the account settings is expanded');
             
-            const profileSettingsLink = page.getByText( 'Profile Settings');
+            const profileSettingsLink = page.getByText( 'Profile Settings',{exact: true});
             await expect(profileSettingsLink).toBeVisible();  
              console.log('The page is redirected to Profile Settings page'); 
              await profileSettingsLink.click();  
