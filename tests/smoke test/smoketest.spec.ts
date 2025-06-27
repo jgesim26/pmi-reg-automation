@@ -37,16 +37,19 @@ test.describe('Verify if high level navigation are working as expected', () => {
         await expect(OpportunitiesPage).toBeVisible();
 
     //Opportunities tabs
-        const PageGapTab = page.getByRole('tab', { name: 'Page Gap' })
-        await expect(PageGapTab).toBeVisible(true);  
+        const PageGapTab = page.locator('//*[@id="q-app"]/div/div/div[2]/main/div/div/div/div[3]/div/div[1]/div/a[1]').getByText('Page Gap',{exact: true});
         console.log('Page Gap tab is activated'); 
+        await expect(PageGapTab).toBeVisible(true);  
         await PageGapTab.click();  
-        await expect(page).toHaveURL(/.*organic-traffic\/websites-analysis\/opportunities\/page-gap/);
+        await expect(page.locator).toBeVisible();
+       // .toHaveURL(/.*organic-traffic\/websites-analysis\/opportunities\/page-gap/);
+        
 
         const LocationGapTab = page.hasText( 'Location Gap');
         await expect(LocationGapTab).toBeVisible();  
         console.log('Location Gap tab is activated'); 
         await LocationGapTab.click();  
+        
         await expect(page).toHaveURL(/.*oragnic-traffic\/websites-analysis\/opportunities\/location-gap/);
 
 

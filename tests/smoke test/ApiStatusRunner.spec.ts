@@ -67,7 +67,7 @@ test('should crawl all API calls and assert non-200 statuses', async ({ page }) 
     // Fail the test if any non-200 API responses were found
     expect(non200ApiResponses.length, 'Expected all API calls to return a 2xx status code.').toBe(0);
   } else {
-    console.log('\nAll detected API calls returned a 2xx status code.');
+    console.log('\nAll detected API calls returned a 200 status code.');
   }
 
   // You can add more assertions here based on your specific testing needs.
