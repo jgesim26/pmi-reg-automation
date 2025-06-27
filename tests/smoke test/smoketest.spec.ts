@@ -36,6 +36,29 @@ test.describe('Verify if high level navigation are working as expected', () => {
         const OpportunitiesPage = page.locator('a.q-item:has(span:has-text("Opportunities"))').filter({ hasText: 'Opportunities' });
         await expect(OpportunitiesPage).toBeVisible();
 
+    //Opportunities tabs
+        const PageGapTab = page.getByRole('tab', { name: 'Page Gap' })
+        await expect(PageGapTab).toBeVisible(true);  
+        console.log('Page Gap tab is activated'); 
+        await PageGapTab.click();  
+        await expect(page).toHaveURL(/.*organic-traffic\/websites-analysis\/opportunities\/page-gap/);
+
+        const LocationGapTab = page.hasText( 'Location Gap');
+        await expect(LocationGapTab).toBeVisible();  
+        console.log('Location Gap tab is activated'); 
+        await LocationGapTab.click();  
+        await expect(page).toHaveURL(/.*oragnic-traffic\/websites-analysis\/opportunities\/location-gap/);
+
+
+        const RelatedWebsitesTab = page.hasText( 'Related Websites');
+        await expect(RelatedWebsitesTab).toBeVisible();  
+        console.log('Related Websites tab is activated'); 
+        await LocationGapTab.click();  
+        await expect(page).toHaveURL(/.*oragnic-traffic\/websites-analysis\/opportunities\/related-websites/);
+
+        await page.pause();
+
+
      await page.locator('a.q-item:has(span:has-text("Your Websites"))').click();
         console.log('Trying to load Your Websites page');
         console.log('Running test: it should display Your Websites page');
