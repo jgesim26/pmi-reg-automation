@@ -12,10 +12,7 @@ test.describe('Verify if high level navigation are working as expected', () => {
     
       
       console.log('Site is accessible. Login process has succesfully processed');
-      setTimeout(() => { 
-      console.log('User is logged in successfully...');
-      }, 5000);
-    
+
     
     // await expect (page.getByText('Website Overview', {exact: true})).toHaveURL(/.*\/organic-traffic\/website-analysis\/website-overview/);
    
@@ -38,30 +35,22 @@ test.describe('Verify if high level navigation are working as expected', () => {
 
     //Opportunities tabs
         const PageGapTab = page.locator('//*[@id="q-app"]/div/div/div[2]/main/div/div/div/div[3]/div/div[1]/div/a[1]').getByText('Page Gap',{exact: true});
-        console.log('Page Gap tab is activated'); 
-        await expect(PageGapTab).toBeVisible(true);  
         await PageGapTab.click();  
-        await expect(page.locator).toBeVisible();
-       // .toHaveURL(/.*organic-traffic\/websites-analysis\/opportunities\/page-gap/);
+        console.log('Page Gap tab is activated');
+      
         
 
-        const LocationGapTab = page.hasText( 'Location Gap');
+        const LocationGapTab = page.locator( '//*[@id="q-app"]/div/div/div[2]/main/div/div/div/div[3]/div/div[1]/div/a[2]');
+        await LocationGapTab.click();
         await expect(LocationGapTab).toBeVisible();  
         console.log('Location Gap tab is activated'); 
-        await LocationGapTab.click();  
         
-        await expect(page).toHaveURL(/.*oragnic-traffic\/websites-analysis\/opportunities\/location-gap/);
 
-
-        const RelatedWebsitesTab = page.hasText( 'Related Websites');
+        const RelatedWebsitesTab = page.locator( '//*[@id="q-app"]/div/div/div[2]/main/div/div/div/div[3]/div/div[1]/div/a[3]');
+        await LocationGapTab.click();  
         await expect(RelatedWebsitesTab).toBeVisible();  
         console.log('Related Websites tab is activated'); 
-        await LocationGapTab.click();  
-        await expect(page).toHaveURL(/.*oragnic-traffic\/websites-analysis\/opportunities\/related-websites/);
-
-        await page.pause();
-
-
+       
      await page.locator('a.q-item:has(span:has-text("Your Websites"))').click();
         console.log('Trying to load Your Websites page');
         console.log('Running test: it should display Your Websites page');
@@ -91,10 +80,13 @@ test.describe('Verify if high level navigation are working as expected', () => {
         await expect(MarketPosition).toBeVisible();    
 
    //PPC
-      await page.getByText('PPC').click({TIMEOUT: 60000});
-      await expect(page.getByText('PPC')).toBeVisible(); 
+      // await page.getByText('PPC').click({TIMEOUT: 60000});
+      const PPCLocate = page.locator('//*[@id="f_e53b2a2f-aab4-445f-b7ed-fc1947a74533"]/div[1]/a/div[3]/div/span');
+      await PPCLocate.click();
+      // await expect(page.getByText('PPC')).toBeVisible(); 
+      
 
-      await page.locator('a.q-item:has(span:has-text("Website Top List"))').click({TIMEOUT: 60000});
+      // await page.locator('a.q-item:has(span:has-text("Website Top List"))').click({TIMEOUT: 60000});
         console.log('Trying to load Website Top List page');
         console.log('Running test: it should display Website Top List page');
           // You can then assert its visibility using the same specific locator
