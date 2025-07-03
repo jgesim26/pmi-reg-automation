@@ -1,0 +1,63 @@
+# .gitlab-ci.yml
+
+# Define the default image to use for all jobs.
+# This image contains Node.js, which is required for Playwright.
+# You can use a more specific Node.js version if needed, e.g., node:20-slim
+image: node:latest
+
+# Define global variables. This is optional but can be useful.
+variables:
+  # Instruct Playwright to install browsers in the project directory
+  # This makes caching easier.
+  PLAYWRIGHT_BROWSERS_PATH: ${CI_PROJECT_DIR}/ms-playwright/
+
+# Define a cache for node modules and Playwright browsers
+# This speeds up subsequent pipeline runs by reusing downloaded dependencies.
+cache:
+  paths:
+    - node_modules/
+    - ${PLAYWRIGHT_BROWSERS_PATH}/ # Cache Playwright browsers
+
+# Define the stages of your pipeline.
+# 'build' for installing dependencies, 'test' for running tests.
+stages:
+  - build
+  - test
+
+# Job to install Node.js dependencies
+install_dependencies:
+  stage: build
+  script:
+    - echo "Installing dependencies..."
+    - npm ci # npm ci is preferred in CI/CD for clean installs
+    - npx playwright install --with-deps # Install Playwright browsers and their system dependencies
+  artifacts:
+    # Cache node_modules and browsers for subsequent jobs.
+    # We use 'untracked: true' for node_modules which might not be tracked by git.
+    paths:
+      - node_modules/
+      - ${PLAYWRIGHT_BROWSERS_PATH}/
+    expire_in: 1 week # Optional: How long to keep the artifacts
+
+# Job to run Playwright tests
+run_playwright_tests:
+  stage: test
+  # This job depends on the 'install_dependencies' job to complete successfully
+  needs: ["install_dependencies"]
+  script:
+    - echo "Running Playwright tests..."
+    # If your tests require a server, you might start it here in the background
+    # - npm run start &
+    # - npx wait-on http://localhost:3000 # Wait for the server to be ready
+    - npx playwright test smoketest.spec.ts
+  artifacts:
+    # If you generate Playwright HTML reports, you can expose them as artifacts.
+    # This allows you to download and view them directly from GitLab.
+    when: always # Always upload artifacts, even if tests fail
+    paths:
+      - playwright-report/ # Path to your Playwright HTML report
+      - test-results/      # Path to test screenshots/videos if configured
+    expire_in: 1 day # Optional: How long to keep the artifacts
+  # You can specify tags if you have specific runners for certain tasks (e.g., Windows runners)
+  # tags:
+  #   - docker
