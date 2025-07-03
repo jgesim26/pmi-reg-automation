@@ -80,11 +80,12 @@ test.describe('Verify if high level navigation are working as expected', () => {
         await expect(MarketPosition).toBeVisible();    
 
    //PPC
-      // await page.getByText('PPC').click({TIMEOUT: 60000});
-      const PPCLocate = page.locator('//*[@id="f_e53b2a2f-aab4-445f-b7ed-fc1947a74533"]/div[1]/a/div[3]/div/span');
-      await PPCLocate.click();
-      // await expect(page.getByText('PPC')).toBeVisible(); 
-      
+      await page.locator('//*[@id="q-app"]/div/div/div[1]/aside/div/div/div[1]/div/div/div[2]').click();
+      console.log('PPC is expanded');
+
+      setTimeout(() => { 
+      }, 5000);
+
 
       // await page.locator('a.q-item:has(span:has-text("Website Top List"))').click({TIMEOUT: 60000});
         console.log('Trying to load Website Top List page');
