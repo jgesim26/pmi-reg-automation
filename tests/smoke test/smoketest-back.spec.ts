@@ -1,143 +1,144 @@
+import {login} from "../utils/constants";
 
-import { USER_CREDENTIALS, login} from "../utils/constants";
-
-const { test, expect } = require('@playwright/test');
-
-test.describe('Verify if high level navigation are working as expected', () => {
-
-  // Test case 1: Login Flow
-  test('The system should allow a user to log in successfully on PartnerMatrix', async ({ page }) => {
-    console.log('Navigating to data.partnermatrix.com...');
-    await page.goto('');
-    console.log('Attempting to fill username/email...');
-    
-    const usernameInput = page.getByPlaceholder('username')
-    await usernameInput.fill(USER_CREDENTIALS.username);
-    await expect(usernameInput).toHaveValue(USER_CREDENTIALS.username);
- 
-    console.log('Username/Email field filled.');
-    console.log('Attempting to fill password...');
-    
-    const passwordInput = page.getByPlaceholder('Password')
-    await passwordInput.fill(USER_CREDENTIALS.password);
-    await expect(passwordInput).toHaveValue(USER_CREDENTIALS.password);
-    
-    console.log('Password field filled.');
-    console.log('Attempting to click login button...');
-   
-    const loginButton = page.getByRole('button', { name: 'Login' });
-
-    await loginButton.click();
-    
-    console.log('Login button clicked.');
-    console.log('Verifying successful login...');   
-    console.log('Login successful!');
-
-  });
+const { test, page, expect } = require('@playwright/test');
 
 
-  // test.describe('Verification for side navigation whether the page is present or removed', () => {  
-    // //Test Case 3: Navigation 1 : Trending Websites
-      
-      test('Should redirect to Trending Websites Page', async ({ page }) => {
-        console.log('Trying to load Trending Websites');
-        console.log('Running test: should display essential trending website elements after login');
 
-        await login(page);
-            // expand - enable this in the future
-          // const OrganicTraffic = page.getByText('Organic Traffic')
-          //   const isOrganicTrafficExpanded = await OrganicTraffic.getAttribute('aria-expanded');
-
-          //   if (isOrganicTrafficExpanded === 'true') {
-          //     console.log('Organic Traffic section is expanded, collapsing it to clear path.');
-          //       await OrganicTraffic.click(); // Click to collapse if it's expanded
-          //       // Optionally wait for it to visually collapse/aria-expanded to be 'false'
-          //       await expect(OrganicTraffic).toHaveAttribute('aria-expanded', 'false');
-          //     } else {
-          //     console.log('OrganicTraffic section is already collapsed or not found expanded.');
-          //      }
-        await page.getByText('Trending Websites').click();
-        await expect(page.getByText('Trending Websites', {exact : true})).toBeVisible();
-
+   test.describe('Check high level navigation ', () => {
   
-      });
-      test('Should redirect to Opportunities Page', async ({ page }) => {
-        await login(page); 
+      
+          test.beforeEach(async ({ page }) => {
+            await login(page);
+        
+          });
+
+        test('The system should allow a user to log in successfully on PartnerMatrix', async ({ page }) => {
+          console.log('Site is accessible. Login process has succesfully processed'); 
+          console.log('Successfully redirected to /organic-traffic/website-analysis/website-overview');
+          console.log('User is logged in successfully and redirected to Website Overview page!');
+        });
+        test('Verify if Trending websites is visible and active', async ({ page }) => {
+          console.log('Trying to load Trending Websites');
+          console.log('Running test: should display essential trending website elements after login'); 
+          await page.getByText('Trending Websites',{exact: true}).click();
+          await expect(page.getByRole('main').getByText('Trending Websites', {exact : true})).toBeVisible();
+
+        });
+        test('Verify if Opportunities is visible and active', async ({ page }) => {
+
           await page.locator('a.q-item:has(span:has-text("Opportunities"))').click();
-            console.log('Trying to load Opportunities page');
-            console.log('Running test: it should display Opportunities page');
-            // You can then assert its visibility using the same specific locator
-            const OpportunitiesLocator = page.locator('a.q-item:has(span:has-text("Opportunities"))').filter({ hasText: 'Opportunities' });
-            await expect(OpportunitiesLocator).toBeVisible();
-        
-      });
-      test('Should redirect to Position Changes Page', async ({ page }) => {
-        
-        console.log('Trying to load Position Changes page');
-        console.log('Running test: it should display Position Changes page');
+          console.log('Trying to load Opportunities page');
+          console.log('Running test: it should display Opportunities page');
+          const OpportunitiesPage = page.locator('a.q-item:has(span:has-text("Opportunities"))').filter({ hasText: 'Opportunities' });
+          await expect(OpportunitiesPage).toBeVisible();
+        });
+        test('Verify if Your Websites is visible and active', async ({ page }) => {
 
-        await login(page);
-        await page.getByText('PPC').click({TIMEOUT: 60000});
-        await expect(page.getByText('PPC', { exact: true })).toBeVisible();
-        await expect(page.getByText('PPC',{ exact: true })).toBeVisible();
-        await page.getByText('Position Changes').click({TIMEOUT: 60000});
-        await expect(page.getByText('Position Changes')).toBeVisible();
-      
-      });
-
-});
-
-
-// PPC
-test.describe('Verify if side navs are present and visible', () => {  
- 
-
-    test('PPC dropdown should expand', async ({ page }) => {
-      await login(page);
-      await page.waitForLoadState('networkidle');
-      await page.getByText('PPC').click({TIMEOUT: 60000});
-      await expect(page.getByText('PPC')).toBeVisible();
-      
-    });
-    test('Verify if Websiite Top List exists', async ({ page }) => {
-      await login(page);
-      await page.getByText('PPC').click({TIMEOUT: 60000});
-      await expect(page.getByText('PPC')).toBeVisible();
-      await page.getByText('Website Top List').click();
-      await expect(page.getByText('Website Top List')).toBeVisible();
-        
-    });
-    test('Verify if Keyword list List exists', async ({ page }) => {
-    await login(page);
-    await page.waitForLoadState('networkidle');
-    await page.getByText('PPC').click({TIMEOUT: 60000});
-    await expect(page.getByText('PPC')).toBeVisible();
-    await page.getByText('Keyword List').click({TIMEOUT: 60000});
-    await expect(page.getByText('Keyword List')).toBeVisible();
-        
-    });
-    test('Verify if Black Hat List exists', async ({ page }) => {
-    await login(page);
-    await page.waitForLoadState('networkidle');
-    await page.getByText('PPC').click({TIMEOUT: 60000});
-    await expect(page.getByText('PPC')).toBeVisible();
-    await page.getByText('Black Hat').click({TIMEOUT: 60000});
-    await expect(page.getByText('Black Hat')).toBeVisible();
-        
-    });
-    test('Verify if Brand Bidding exists', async ({ page }) => {
-    await login(page);
-    await page.waitForLoadState('networkidle');
-    await page.getByText('PPC').click({TIMEOUT: 60000});
-    await expect(page.getByText('PPC')).toBeVisible();
-    await page.getByText('Brand Bidding').click({TIMEOUT: 60000});
-    await expect(page.getByText('Brand Bidding')).toBeVisible();
-        
-    });
-        
-        
+          await page.locator('a.q-item:has(span:has-text("Your Websites"))').click();
+          console.log('Trying to load Your Websites page');
+          console.log('Running test: it should display Your Websites page');
+          const OrganicYourWebsites = page.locator('a.q-item:has(span:has-text("Your Websites"))').filter({ hasText: 'Your Websites' });
+          await expect(OrganicYourWebsites).toBeVisible(); 
           
-});
+        });
+        test('Verify if Position Changes is visible and active', async ({ page }) => {
+          await page.locator('a.q-item:has(span:has-text("Position Changes"))').click();
+          console.log('Trying to load Position Changes page');
+          console.log('Running test: it should display Position Changes page');
+          const PositionChanges = page.locator('a.q-item:has(span:has-text("Position Changes"))').filter({ hasText: 'Position Changes' });
+          await expect(PositionChanges).toBeVisible();     
+        });
+
+        test('Verify if Website Search is visible and active', async ({ page }) => {
+          await page.locator('a.q-item:has(span:has-text("Website Search"))').click();
+          console.log('Trying to load Website Search page');
+          console.log('Running test: it should display Website Search page');
+          const WebsiteSearch = page.locator('a.q-item:has(span:has-text("Website Search"))').filter({ hasText: 'Website Search' });
+          await expect(WebsiteSearch).toBeVisible();   
+
+        });
+        test('Verify if Market Position is visible and active', async ({ page }) => {
+          await page.locator('a.q-item:has(span:has-text("Market Position"))').click();
+          console.log('Trying to load Market Position page');
+          console.log('Running test: it should display Market Position page');
+          const MarketPosition = page.locator('a.q-item:has(span:has-text("Market Position"))').filter({ hasText: 'Market Position' });
+          await expect(MarketPosition).toBeVisible();    
+
+        });
+        test('Verify if PPC is visible and able to expand the dropdown', async ({ page }) => {
+          await page.locator('//*[@id="q-app"]/div/div/div[1]/aside/div/div/div[1]/div/div/div[2]').click();
+          console.log('PPC is expanded');
+
+          setTimeout(() => { 
+          }, 5000);
+
+        });
+
+
+        test('Verify if Website Top list page is visible working as expected', async ({ page }) => {
+        
+          console.log('Trying to load Website Top List page');
+          console.log('Running test: it should display Website Top List page');
+          // const WebsiteTopList = page.locator('a.q-item:has(span:has-text("Website Top List"))').filter({ hasText: 'Website Top List' });
+          const WebsiteTopList = page.locator('//*[@id="q-app"]/div/div/div[1]/aside/div/div/div[1]/div/div/div[2]/div/div[1]').filter({ hasText: 'Website Top List' });
+          await page.RelatedWebsitesTab.click();
+          await expect(WebsiteTopList).toBeVisible();  
+        });  
+        test('Verify if Keyword List page is visible working as expected', async ({ page }) => {
+        
+          await page.locator('a.q-item:has(span:has-text("Keyword List"))').click();
+          console.log('Trying to load Keyword List page');
+          console.log('Running test: it should display Keyword List page');
+            // You can then assert its visibility using the same specific locator
+          const KeywordList = page.locator('a.q-item:has(span:has-text("Keyword List"))').filter({ hasText: 'Keyword List' });
+          await expect(KeywordList).toBeVisible();  
+        });  
+
+        test('Verify if Black Hat page is visible working as expected', async ({ page }) => {
+        
+          await page.locator('a.q-item:has(span:has-text("Black Hat"))').click();
+          console.log('Trying to load Black Hat page');
+          console.log('Running test: it should display Black Hat page');
+            // You can then assert its visibility using the same specific locator
+          const BlackHat = page.locator('a.q-item:has(span:has-text("Black Hat"))').filter({ hasText: 'Black Hat' });
+          await expect(BlackHat).toBeVisible(); 
+        });   
+        test('Verify if Brand Bidding page is visible working as expected', async ({ page }) => {
+
+          await page.locator('a.q-item:has(span:has-text("Brand Bidding"))').click();
+          console.log('Trying to load Brand Bidding page');
+          console.log('Running test: it should display Brand Bidding page');
+            // You can then assert its visibility using the same specific locator
+          const BrandBidding = page.locator('a.q-item:has(span:has-text("Brand Bidding"))').filter({ hasText: 'Brand Bidding' });
+          await expect(BrandBidding).toBeVisible();  
+        });
+        test('Verify if Keyword Search page is visible working as expected', async ({ page }) => {
+
+          await page.locator('a.q-item:has(span:has-text("Keyword Search"))').click();
+          console.log('Trying to load Keyword Search page');
+          console.log('Running test: it should display KeywordSearch page');
+            // You can then assert its visibility using the same specific locator
+          const KeywordSearch = page.locator('a.q-item:has(span:has-text("Keyword Search"))').filter({ hasText: 'Keyword Search' });
+          await expect(KeywordSearch).toBeVisible();  
+        });
+        test('Verify if Telegram page is visible working as expected', async ({ page }) => {
+
+          await page.locator('a.q-item:has(span:has-text("Telegram"))').click();
+          console.log('Trying to load Telegram page');
+          console.log('Running test: it should display Telegram page');
+            // You can then assert its visibility using the same specific locator
+          const TelegramPage = page.locator('a.q-item:has(span:has-text("Telegram"))').filter({ hasText: 'Telegram' });
+          await expect(TelegramPage).toBeVisible();  
+          setTimeout(() => { 
+          }, 5000);
+
+        });  
+
+}); 
 
 
 
+
+
+
+    

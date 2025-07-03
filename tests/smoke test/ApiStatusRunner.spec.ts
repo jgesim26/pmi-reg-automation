@@ -1,10 +1,10 @@
 import { test, expect, Page, Route } from '@playwright/test';
 
-// Define the URL of the website you want to test
-const WEBSITE_URL = 'https://api.data.partnermatrix.com/api/v1'; // Example: A simple API endpoint
+ 
+const WEBSITE_URL = 'https://api.data.partnermatrix.com/api/v1'; 
 
 test('should crawl all API calls and assert non-200 statuses', async ({ page }) => {
-  // Array to store information about API responses with non-200 status codes
+
   const non200ApiResponses: { url: string; status: number; }[] = [];
 
   /**
