@@ -5,7 +5,7 @@ export async function login(page: Page, username?: string, password?: string) {
   await page.goto('/'); 
 
   await page.getByPlaceholder('username').fill(username || 'jayson.gesim@everymatrix.com');
-  await page.getByPlaceholder('Password').fill(password || '123');
+  await page.getByPlaceholder('Password').fill(password || '12345678');
   await page.getByRole('button', { name: 'Login' }).click();
   setTimeout(() => { 
     }, 5000);
@@ -13,7 +13,7 @@ export async function login(page: Page, username?: string, password?: string) {
 
 export const USER_CREDENTIALS = {
   username: 'jayson.gesim@everymatrix.com',
-  password: '123',
+  password: '12345678',
 };
 export const INVALID_USER_CREDENTIALS = {
   invalusername: 'jayson.gesim@everymatrixX.com',
