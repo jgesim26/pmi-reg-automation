@@ -1,12 +1,14 @@
 import {login} from "../utils/constants";
 
-const { test, expect } = require('@playwright/test');
+const { test, expect, page} = require('@playwright/test');
 
 
     test.describe('Smoke test execution status', () => {
     });
       // Test case 1: Login Flow
       test('The system should allow a user to log in successfully on PartnerMatrix', async ({ page }) => {
+        
+        console.log('Navigating to stage.app.deepci');
         console.log('Navigating to data.partnermatrix.com...');
         // await page.goto('/');
         await login(page);
@@ -81,20 +83,17 @@ const { test, expect } = require('@playwright/test');
             await expect(MarketPosition).toBeVisible();    
 
       //PPC
-          await page.locator('//*[@id="q-app"]/div/div/div[1]/aside/div/div/div[1]/div/div/div[2]').click();
-          console.log('PPC is expanded');
+          const PPCExpand = page.locator('xpath=//*[@id="q-app"]/div/div/div[1]/aside/div/div/div[1]/div/div/div[2]').filter({ hasText: 'PPC' })
+          await PPCExpand.click();
+          console.log('PPC Nav menu is expanded');
 
-          setTimeout(() => { 
-          }, 5000);
+                  
+          const websiteTopListLink = page.locator('a.q-item:has(span:has-text("Website Top List"))').filter({ hasText: 'Website Top List' });
 
-
-          // await page.locator('a.q-item:has(span:has-text("Website Top List"))').click({TIMEOUT: 60000});
-            console.log('Trying to load Website Top List page');
-            console.log('Running test: it should display Website Top List page');
-              // You can then assert its visibility using the same specific locator
-            const WebsiteTopList = page.locator('a.q-item:has(span:has-text("Website Top List"))').filter({ hasText: 'Website Top List' });
-            WebsiteTopList.click();
-            await expect(WebsiteTopList).toBeVisible();  
+          
+           await websiteTopListLink.click();
+           await expect(page.getByRole('main').getByText('Website Top List')).toBeVisible();
+            console.log('Website Top List page loaded successfully.');
 
             await page.locator('a.q-item:has(span:has-text("Keyword List"))').click();
             console.log('Trying to load Keyword List page');
@@ -133,8 +132,20 @@ const { test, expect } = require('@playwright/test');
               // You can then assert its visibility using the same specific locator
             const TelegramPage = page.locator('a.q-item:has(span:has-text("Telegram"))').filter({ hasText: 'Telegram' });
             await expect(TelegramPage).toBeVisible();  
-            setTimeout(() => { 
-            }, 5000);
+            
+            // const TelegramChannelsTab = page.getByText( 'Channels');
+            //  await TelegramChannelsTab.click();  
+            // await expect(TelegramChannelsTab).toBeVisible();  
+            // console.log('Telegram Channels tab is activated'); 
+           
+            // await expect(page).toHaveURL(/.*telegram\/channels/);
+
+            // const TelegramBrandsTab = page.getByText( 'Brands');
+            // await TelegramBrandsTab.click();  
+            // await expect(TelegramBrandsTab).toBeVisible();  
+            // console.log('Telegram Brands tab is activated'); 
+           
+            // await expect(page).toHaveURL(/.*telegram\/brands/);
           
           
       // Accessing account page settings
@@ -160,9 +171,9 @@ const { test, expect } = require('@playwright/test');
                 
                 const profileSettingsLink = page.getByText( 'Profile Settings',{exact: true});
                 await expect(profileSettingsLink).toBeVisible();  
-                 console.log('The page is redirected to Profile Settings page'); 
-                 await profileSettingsLink.click();  
-                 await expect(page).toHaveURL(/.*\/settings\/profile-settings/);
+                console.log('The page is redirected to Profile Settings page'); 
+                await profileSettingsLink.click();  
+                await expect(page).toHaveURL(/.*\/settings\/profile-settings/);
       
               
 

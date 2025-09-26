@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "test.js",
-  "scripts": {},
+  "scripts": {
+    "start:checker": "ts-node brand-list-checker.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.53.0",
-    "@types/node": "^22.15.23"
+    "@types/node": "^22.15.23",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

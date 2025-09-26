@@ -1,7 +1,3 @@
-import { test, expect, Page, Route } from '@playwright/test';
-
- 
-const WEBSITE_URL = 'https://api.data.partnermatrix.com/api/v1'; 
 
 test('should crawl all API calls and assert non-200 statuses', async ({ page }) => {
 
