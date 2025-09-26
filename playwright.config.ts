@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -27,7 +27,7 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://data.partnermatrix.com',
     // baseURL: 'https://stage.app.deepci.com/',
-     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://stage.app.deepci.com',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://stage.app.deepci.com',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -47,11 +47,19 @@ export default defineConfig({
       use: { ...devices['Desktop Firefox'] },
     },
 
+<<<<<<< HEAD
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
 //start here
+=======
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
+    //start here
+>>>>>>> a9dcb204f226a6999eb98fe3d5382c5a99b1e69f
     /* Test against mobile viewports. */
     {
       name: 'Mobile Chrome',
@@ -63,10 +71,17 @@ export default defineConfig({
     },
 
     /* Test against branded browsers. */
+<<<<<<< HEAD
     {
       name: 'Microsoft Edge',
       use: { ...devices['Desktop Edge'], channel: 'msedge' },
     },
+=======
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    // },
+>>>>>>> a9dcb204f226a6999eb98fe3d5382c5a99b1e69f
     {
       name: 'Google Chrome',
       use: { ...devices['Desktop Chrome'], channel: 'chrome' },
@@ -80,4 +95,4 @@ export default defineConfig({
   //   url: 'http://localhost:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
-});
+})
