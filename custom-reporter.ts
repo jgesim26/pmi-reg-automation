@@ -95,7 +95,7 @@ class MyCustomReporter implements Reporter {
       console.log(`\n✨ Report saved: ${reportPath}`);
 
       if (!process.env.CI) {
-        const command = process.platform === 'jayson' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+        const command = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
         // Use a slight delay to ensure the OS has finished writing the file
         setTimeout(() => exec(`${command} "${reportPath}"`), 500);
       }
