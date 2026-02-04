@@ -5,3 +5,15 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+# Sensitive credentials
+.env
+
+# Playwright storage state (Authentication tokens)
+playwright/.auth/
+auth.json
+
+# Local test outputs (Screenshots and reports)
+screenshots/
+test-results/
+playwright-report/
+blob-report/

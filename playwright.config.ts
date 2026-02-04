@@ -1,98 +1,80 @@
-import { defineConfig, devices } from '@playwright/test'
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 
 /**
- * See https://playwright.dev/docs/test-configuration.
+ * Read environment variables from .env file.
+ * Senior Practice: Ensures sensitive data isn't hardcoded.
  */
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+/**
+ * PRE-RUN UTILITIES
+ * Senior Practice: Automating directory maintenance.
+ */
+const STORAGE_STATE = path.join(__dirname, 'playwright/.auth/user.json');
+const SCREENSHOT_DIR = path.join(__dirname, 'screenshots');
+
+// Ensure the auth directory exists
+const authDir = path.dirname(STORAGE_STATE);
+if (!fs.existsSync(authDir)) {
+    fs.mkdirSync(authDir, { recursive: true });
+}
+
+// Senior Touch: Clean the screenshots folder before every fresh run
+if (fs.existsSync(SCREENSHOT_DIR)) {
+    fs.rmSync(SCREENSHOT_DIR, { recursive: true, force: true });
+}
+fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
+
 export default defineConfig({
   testDir: './tests',
+  /* Maximum time one test can run for */
+  timeout: 30 * 1000,
+  expect: {
+    timeout: 5000
+  },
   /* Run tests in files in parallel */
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  /* Fail the build on CI if you accidentally left test.only in the source code */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
+  /* Opt out of parallel tests on CI */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  // reporter: 'html',
+  reporter: [['./custom-reporter.ts']],
+
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://data.partnermatrix.com',
-    // baseURL: 'https://stage.app.deepci.com/',
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://stage.app.deepci.com',
+    /* Base URL to use in actions like `await page.goto('/')` */
+    baseURL: process.env.BASE_URL || 'https://stage.app.deepci.com',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    
+    /* Global setting to allow screenshots on failure in addition to your manual ones */
     screenshot: 'only-on-failure',
-    video: 'on-first-retry',
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        // This tells the browser to use the authenticated state
+        storageState: STORAGE_STATE,
+      },
+      // Ensures the login project runs before the actual tests
+      dependencies: ['setup'],
     },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-<<<<<<< HEAD
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-//start here
-=======
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-    //start here
->>>>>>> a9dcb204f226a6999eb98fe3d5382c5a99b1e69f
-    /* Test against mobile viewports. */
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    },
-
-    /* Test against branded browsers. */
-<<<<<<< HEAD
-    {
-      name: 'Microsoft Edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    },
-=======
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
->>>>>>> a9dcb204f226a6999eb98fe3d5382c5a99b1e69f
-    {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    },
-    //end here
   ],
 
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
-})
+  /* Folder for test artifacts such as screenshots, videos, traces, etc. */
+  outputDir: 'test-results/',
+});

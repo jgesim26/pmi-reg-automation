@@ -1,0 +1,54 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body { font-family: system-ui, -apple-system, sans-serif; padding: 40px; background: #f8fafc; }
+        .summary { display: flex; gap: 20px; margin-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; flex: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-top: 4px solid #64748b; }
+        .card.passed { border-top-color: #22c55e; }
+        .card.failed { border-top-color: #ef4444; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+        th { background: #f1f5f9; padding: 12px; text-align: left; font-size: 12px; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; vertical-align: top; font-size: 14px; }
+        .status-pill { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .status-pill.passed { background: #dcfce7; color: #166534; }
+        .status-pill.failed { background: #fee2e2; color: #991b1b; }
+        .reason-cell { font-family: monospace; font-size: 12px; white-space: pre-wrap; }
+        .screenshot-container img { max-width: 150px; border: 1px solid #ddd; margin-top: 10px; cursor: pointer; }
+      </style>
+    </head>
+    <body>
+      <h2>Test Report</h2>
+      <div class="summary">
+        <div class="card"><strong>Total</strong><p>2</p></div>
+        <div class="card passed"><strong>Passed</strong><p>2</p></div>
+        <div class="card failed"><strong>Failed</strong><p>0</p></div>
+      </div>
+      <table>
+        <thead><tr><th>Page</th><th>URL</th><th>Status</th><th>Reason/Screenshot</th></tr></thead>
+        <tbody>
+      <tr class="passed">
+        <td><strong>authenticate</strong><br><small style="color:#94a3b8">7.07s</small></td>
+        <td><a href="N/A" target="_blank">N/A</a></td>
+        <td><span class="status-pill passed">PASSED</span></td>
+        <td class="reason-cell">
+            <div>Success</div>
+            
+        </td>
+      </tr>
+    
+      <tr class="passed">
+        <td><strong>should validate brand search and accordion headers</strong><br><small style="color:#94a3b8">9.62s</small></td>
+        <td><a href="N/A" target="_blank">N/A</a></td>
+        <td><span class="status-pill passed">PASSED</span></td>
+        <td class="reason-cell">
+            <div>Success</div>
+            
+        </td>
+      </tr>
+    </tbody>
+      </table>
+    </body>
+    </html>
