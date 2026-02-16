@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { Script } from 'vm';
 
 /**
  * Read environment variables from .env file.
@@ -48,6 +49,7 @@ export default defineConfig({
 
   use: {
     /* Base URL to use in actions like `await page.goto('/')` */
+    
     baseURL: process.env.BASE_URL || 'https://stage.app.deepci.com',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */

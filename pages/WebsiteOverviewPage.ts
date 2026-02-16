@@ -12,16 +12,18 @@ export class WebsiteOverviewPage extends BasePage {
   }
 
   async verifyHeading() {
-  
-  const mainContent = this.page.getByRole('main');
-  await expect(mainContent.getByText('Website Overview', { exact: true })).toBeVisible();
-}
+    const frame = this.page.locator('span.title:has-text("Website Overview")')
 
+    await expect(frame).toBeVisible()
+    await frame.evaluate((node) => {
+      node.style.border = '2px solid #00ffcc'
+      node.style.padding = '4px'  
+    })
+  }
   async searchAndSelectBrand(brand: string) {
     await this.searchBox.fill(brand)
     const result = this.page.locator(`text=${brand}`).first()
     await result.waitFor({ state: 'visible' })
-    await result.click()
   }
 
   async verifyAccordionHeadings() {
@@ -30,9 +32,15 @@ export class WebsiteOverviewPage extends BasePage {
       'Track Top Traffic Pages',
       'Unlock Brand Rankings',
       'Discover Related Websites',
+      'Track Your Competition and Their Affiliates '
     ]
     for (const text of headings) {
+      const locator = this.page.getByText(text, { exact: true })
       await expect(this.page.getByText(text, { exact: true })).toBeVisible()
+      await locator.evaluate((node) => {
+        node.style.border = '2px solid #00ffcc'
+        node.style.padding = '4px'  
+      })
     }
   }
 }
