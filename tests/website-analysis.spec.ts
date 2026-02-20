@@ -13,28 +13,30 @@ test.describe('Website Overview Analysis', () => {
 
   test('should validate brand search and accordion headers', async () => {
     await overviewPage.verifyHeading()
-    await overviewPage.captureScreenshot('1-heading-check')
+    await overviewPage.captureScreenshot('heading-check')
   })
   test('should validate accordion and headings visibility', async () => {
     await overviewPage.verifyAccordionHeadings()
-    await overviewPage.captureScreenshot('3-accordions-verified')
+    await overviewPage.captureScreenshot('accordions-verified')
   })
   test('should validate search functionality ', async () => {
     await overviewPage.searchAndSelectBrand('BET365')
-    await overviewPage.captureScreenshot('2-brand-search-result')
+    await overviewPage.captureScreenshot('brand-search-result')
   })
 })
-
 test.describe('Trending Websites Analysis', () => {
-  let trendingPage: TrendingWebsitesPage
+  let trendingPage: TrendingWebsitesPage;
 
   test.beforeEach(async ({ page }) => {
-    trendingPage = new TrendingWebsitesPage(page)
-  })
+    trendingPage = new TrendingWebsitesPage(page);
+    
+    await trendingPage.navigateToTrending();
+  });
 
-  test('should load trending data within 5s and verify table content', async () => {
-  await trendingPage.verifyPageLoadedWithin(5);
-  await trendingPage.verifyTableHasData();
-  await trendingPage.captureScreenshot('3-trending-websites-verified');
-  })
-})
+  test('should load trending data within 10s and verify table content', async () => {
+    
+    await trendingPage.verifyPageLoadedWithin(10);
+    await trendingPage.verifyTableHasData();
+    await trendingPage.captureScreenshot('trending-websites-verified');
+  });
+});

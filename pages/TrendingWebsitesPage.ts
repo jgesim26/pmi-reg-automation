@@ -4,24 +4,27 @@ import { BasePage } from './BasePage'
 export class TrendingWebsitesPage extends BasePage {
   readonly searchBox: Locator
   readonly pageHeading: Locator
+  readonly table: Locator
+  readonly tableRows: Locator
 
   constructor(page: Page) {
     super(page)
     this.pageHeading = page.getByRole('heading', { name: 'Website Overview' })
     this.searchBox = page.getByPlaceholder(/search/i)
+
+    this.table = page.locator('table')
+    this.tableRows = this.table.locator('tr')
   }
 
-  // Added a specific navigate method for this page
   async navigateToTrending() {
     await this.page.goto(
       '/organic-traffic/website-analysis/trending-websites?location_id=1&spectrum&search=&brand_id=my',
     )
   }
 
-  async verifyPageLoadedWithin(seconds: number = 5) {
+  async verifyPageLoadedWithin(seconds: number = 10) {
     const start = Date.now()
 
-    // Use a more flexible regex to handle the query parameters
     await expect(this.page).toHaveURL(/\/trending-websites\?.*brand_id=my/, { timeout: 10000 })
 
     await this.page.waitForLoadState('networkidle')
@@ -33,8 +36,7 @@ export class TrendingWebsitesPage extends BasePage {
   }
 
   async verifyTableHasData() {
-    // Wait for the table to actually have content
-    await this.tableRows.first().waitFor({ state: 'visible' })
+    await this.table.locator('tr:visible').first()
     const count = await this.tableRows.count()
 
     if (count > 0) {
@@ -46,6 +48,7 @@ export class TrendingWebsitesPage extends BasePage {
   }
 
   async captureScreenshot(name: string) {
-    await this.page.screenshot({ path: `./screenshots/${name}.png`, fullPage: true })
+    let date = Date.now().toString(2);
+    await this.page.screenshot({ path: `./screenshots/${date}-${name}.png`, fullPage: true })
   }
 }

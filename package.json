@@ -4,7 +4,8 @@
   "description": "",
   "main": "test.js",
   "scripts": {
-    "start:checker": "ts-node brand-list-checker.ts"
+    "start:checker": "ts-node brand-list-checker.ts",
+    "test:path": "npx playwright test tests/website-analysis.spec.ts"
   },
   "keywords": [],
   "author": "",

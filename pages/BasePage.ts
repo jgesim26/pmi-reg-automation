@@ -8,8 +8,9 @@ export class BasePage {
   }
 
   async captureScreenshot(name: string) {
+    let date = Date.now().toString(2);
     await this.page.screenshot({ 
-      path: `./screenshots/${name}.png`, 
+      path: `./screenshots/${date}-${name}.png`, 
       fullPage: true 
     });
   }
