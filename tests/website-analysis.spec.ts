@@ -65,12 +65,28 @@ test.describe('Opportunities Page -> Location Gap', () => {
   test.beforeEach(async ({ page }) => {
     opportunitiesPageLocationGap = new OpportunitiesPage(page);
     
-    await opportunitiesPageLocationGap.navigateToOpportunity();
+    await opportunitiesPageLocationGap.navigateToLocationGap();
   });
   test('should load location gap data within 10s and verify table content', async () => {
     
     await opportunitiesPageLocationGap.verifyPageLoadedWithin(10);
     await opportunitiesPageLocationGap.verifyTableHasData();
     await opportunitiesPageLocationGap.captureScreenshot('location-gap-verified');
+  });
+});
+ 
+test.describe('Opportunities Page -> Related Websites', () => {
+  let opportunitiesPageLocationGap: OpportunitiesPage;
+
+  test.beforeEach(async ({ page }) => {
+    opportunitiesPageLocationGap = new OpportunitiesPage(page);
+    
+    await opportunitiesPageLocationGap.navigateToRelatedWebsites();
+  });
+  test('should load related websites data within 10s and verify table content if present', async () => {
+    
+    await opportunitiesPageLocationGap.verifyRelatedWebsitesLoadedWithin(10);
+    await opportunitiesPageLocationGap.verifyTableHasData(undefined, false);
+    await opportunitiesPageLocationGap.captureScreenshot('related-websites-verified');
   });
 });
