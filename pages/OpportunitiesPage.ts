@@ -3,17 +3,14 @@ import { Page, Locator, expect } from '@playwright/test'
 import { BasePage } from './BasePage'
 
 export class OpportunitiesPage extends BasePage {
-  // readonly searchBox: Locator
-  // readonly pageHeading: Locator
   readonly table: Locator
   readonly tableRows: Locator
-  
+
   constructor(page: Page) {
     super(page)
-    this.table = page.getByRole('table');
-    this.tableRows = this.table.locator('tr:visible');
+    this.table = page.getByRole('table')
+    this.tableRows = this.table.locator('tr:visible')
   }
- 
 
   async navigateToOpportunity() {
     await this.page.goto('/organic-traffic/website-analysis/opportunities/page-gap')
@@ -22,10 +19,11 @@ export class OpportunitiesPage extends BasePage {
   async navigateToLocationGap() {
     await this.page.goto('/organic-traffic/website-analysis/opportunities/location-gap')
   }
+  
 
   async verifyPageLoadedWithin(
     seconds: number = 0,
-    urlRegex: RegExp = /\/organic-traffic\/website-analysis\/opportunities\/page-gap/
+    urlRegex: RegExp = /\/organic-traffic\/website-analysis\/opportunities\/page-gap/,
   ) {
     const start = Date.now()
 
@@ -40,10 +38,7 @@ export class OpportunitiesPage extends BasePage {
   }
 
   async verifyLocationGapLoadedWithin(seconds: number = 0) {
-    return this.verifyPageLoadedWithin(
-      seconds,
-      /\/organic-traffic\/website-analysis\/opportunities\/location-gap/
-    )
+    return this.verifyPageLoadedWithin(seconds, /\/organic-traffic\/website-analysis\/opportunities\/location-gap/)
   }
 
   async navigateToRelatedWebsites() {
@@ -51,10 +46,7 @@ export class OpportunitiesPage extends BasePage {
   }
 
   async verifyRelatedWebsitesLoadedWithin(seconds: number = 0) {
-    return this.verifyPageLoadedWithin(
-      seconds,
-      /\/organic-traffic\/website-analysis\/opportunities\/related-websites/
-    )
+    return this.verifyPageLoadedWithin(seconds, /\/organic-traffic\/website-analysis\/opportunities\/related-websites/)
   }
 
   async verifyTableHasData(screenshotName?: string) {
@@ -69,12 +61,11 @@ export class OpportunitiesPage extends BasePage {
       const screenshotPath = path.join(
         process.cwd(),
         'screenshots',
-        `${screenshotName ?? 'table-data'}-${Date.now()}.png`
+        `${screenshotName ?? 'table-data'}-${Date.now()}.png`,
       )
       await this.page.screenshot({ path: screenshotPath, fullPage: true })
       console.log(`📸 Saved table screenshot: ${screenshotPath}`)
     }
     expect(count, 'Data table should not be empty').toBeGreaterThan(0)
   }
-
 }
