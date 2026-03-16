@@ -1,6 +1,7 @@
 import { test } from '@playwright/test'
 import { WebsiteOverviewPage } from '../pages/WebsiteOverviewPage'
 import { TrendingWebsitesPage } from '../pages/TrendingWebsitesPage'
+import { OpportunitiesPage } from '../pages/OpportunitiesPage'
 
 test.describe('Website Overview Analysis', () => {
   let overviewPage: WebsiteOverviewPage
@@ -11,7 +12,7 @@ test.describe('Website Overview Analysis', () => {
     await overviewPage.navigateTo('/organic-traffic/website-analysis/website-overview')
   })
 
-  test('should validate brand search and accordion headers', async () => {
+  test('should validate brand search ', async () => {
     await overviewPage.verifyHeading()
     await overviewPage.captureScreenshot('heading-check')
   })
@@ -38,5 +39,38 @@ test.describe('Trending Websites Analysis', () => {
     await trendingPage.verifyPageLoadedWithin(10);
     await trendingPage.verifyTableHasData();
     await trendingPage.captureScreenshot('trending-websites-verified');
+  });
+
+});
+  
+test.describe('Opportunities Page', () => {
+  let opportunitiesPage: OpportunitiesPage;
+
+  test.beforeEach(async ({ page }) => {
+    opportunitiesPage = new OpportunitiesPage(page);
+    
+    await opportunitiesPage.navigateToOpportunity();
+  });
+  test('should load opportunities data within 10s and verify table content', async () => {
+    
+    await opportunitiesPage.verifyPageLoadedWithin(10);
+    await opportunitiesPage.verifyTableHasData();
+    await opportunitiesPage.captureScreenshot('opportunities-page-verified');
+  });
+});
+  
+test.describe('Opportunities Page -> Location Gap', () => {
+  let opportunitiesPageLocationGap: OpportunitiesPage;
+
+  test.beforeEach(async ({ page }) => {
+    opportunitiesPageLocationGap = new OpportunitiesPage(page);
+    
+    await opportunitiesPageLocationGap.navigateToOpportunity();
+  });
+  test('should load location gap data within 10s and verify table content', async () => {
+    
+    await opportunitiesPageLocationGap.verifyPageLoadedWithin(10);
+    await opportunitiesPageLocationGap.verifyTableHasData();
+    await opportunitiesPageLocationGap.captureScreenshot('location-gap-verified');
   });
 });

@@ -12,7 +12,7 @@ export class TrendingWebsitesPage extends BasePage {
     this.pageHeading = page.getByRole('heading', { name: 'Website Overview' })
     this.searchBox = page.getByPlaceholder(/search/i)
 
-    this.table = page.locator('table')
+    this.table = page.getByRole('table')
     this.tableRows = this.table.locator('tr')
   }
 
@@ -47,8 +47,4 @@ export class TrendingWebsitesPage extends BasePage {
     expect(count, 'Data table should not be empty').toBeGreaterThan(0)
   }
 
-  async captureScreenshot(name: string) {
-    let date = Date.now().toString(2);
-    await this.page.screenshot({ path: `./screenshots/${date}-${name}.png`, fullPage: true })
-  }
 }

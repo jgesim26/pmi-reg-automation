@@ -77,7 +77,7 @@ class MyCustomReporter implements Reporter {
       </style>
     </head>
     <body>
-      <h2>Test Report</h2>
+      <h2>Test Execution Report</h2>
       <div class="summary">
         <div class="card"><strong>Total</strong><p>${total}</p></div>
         <div class="card passed"><strong>Passed</strong><p>${passed}</p></div>
