@@ -1,0 +1,30 @@
+{
+  "url": "https://stage.app.deepci.com/organic-traffic/website-analysis/website-overview",
+  "title": "Website Overview",
+  "bodySnippet": "<!DOCTYPE html><html dir=\"ltr\" lang=\"en-US\"><head><title>Website Overview</title><meta charset=\"utf-8\"><meta name=\"description\" content=\"PartnerMatrix Intelligence Web App\"><meta name=\"format-detection\" content=\"telephone=no\"><meta name=\"msapplication-tap-highlight\" content=\"no\"><meta name=\"viewport\" content=\"user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width\"><style>body {\n        font-family: 'Metric', sans-serif !important;\n      }\n      #magic-loader {\n        position: fixed;\n        top: 0;\n        left: 0;\n        width: 100%;\n        height: 100%;\n        background-color: #f8f8f8;\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        line-height: 1.5;\n        align-items: center;\n        z-index: 9999;\n      }\n      #magic-loader img {\n        display: block;\n        margin-bottom: 20px;\n        padding: 0;\n      }</style><link rel=\"icon\" type=\"image/png\" sizes=\"128x128\" href=\"/assets/favicon-128x128-BZbsz1lB.png\"><link rel=\"icon\" type=\"image/png\" sizes=\"96x96\" href=\"/assets/favicon-96x96-D4aXuBdM.png\"><link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/assets/favicon-32x32-liU6jk6g.png\"><link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/assets/favicon-16x16-B14dS_Y6.png\"><link rel=\"icon\" type=\"image/ico\" href=\"/assets/favicon-16x16-BHjrsYbv.ico\">  <script type=\"module\" crossorigin=\"\" src=\"/assets/index-tgAUqC39.js\"></script>\n  <link rel=\"stylesheet\" crossorigin=\"\" href=\"/assets/index-CjVWoaqs.css\">\n<link rel=\"manifest\" href=\"/manifest.json\"><meta name=\"theme-color\" content=\"#faa200\"><link rel=\"mask-icon\" href=\"/icons/safari-pinned-tab.svg\" color=\"#faa200\"><meta name=\"mobile-web-app-capable\" content=\"yes\"><meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\"><meta name=\"apple-mobile-web-app-title\" content=\"PartnerMatrix Intelligence\"><meta name=\"msapplication-TileImage\" content=\"/icons/ms-icon-144x144.png\"><meta name=\"msapplication-TileColor\" content=\"#000000\"><",
+  "anchorCount": 20,
+  "links": [],
+  "buttons": [
+    {
+      "text": ""
+    },
+    {
+      "text": "light_mode"
+    },
+    {
+      "text": "arrow_drop_down"
+    },
+    {
+      "text": "Jayson Gesim"
+    },
+    {
+      "text": ""
+    },
+    {
+      "text": "Help"
+    },
+    {
+      "text": "Search"
+    }
+  ]
+}

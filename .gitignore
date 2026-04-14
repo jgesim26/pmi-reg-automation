@@ -17,3 +17,6 @@ screenshots/
 test-results/
 playwright-report/
 blob-report/
+
+# Playwright
+/playwright/.auth/

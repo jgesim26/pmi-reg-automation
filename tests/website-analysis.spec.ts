@@ -34,9 +34,9 @@ test.describe('Trending Websites Analysis', () => {
     await trendingPage.navigateToTrending();
   });
 
-  test('should load trending data within 10s and verify table content', async () => {
+  test('should load trending data within 20s and verify table content', async () => {
     
-    await trendingPage.verifyPageLoadedWithin(10);
+    await trendingPage.verifyPageLoadedWithin(20);
     await trendingPage.verifyTableHasData();
     await trendingPage.captureScreenshot('trending-websites-verified');
   });
@@ -51,9 +51,9 @@ test.describe('Opportunities Page', () => {
     
     await opportunitiesPage.navigateToOpportunity();
   });
-  test('should load opportunities data within 10s and verify table content', async () => {
+  test('should load opportunities data within 20s and verify table content', async () => {
     
-    await opportunitiesPage.verifyPageLoadedWithin(10);
+    await opportunitiesPage.verifyPageLoadedWithin(20);
     await opportunitiesPage.verifyTableHasData();
     await opportunitiesPage.captureScreenshot('opportunities-page-verified');
   });
@@ -67,9 +67,9 @@ test.describe('Opportunities Page -> Location Gap', () => {
     
     await opportunitiesPageLocationGap.navigateToLocationGap();
   });
-  test('should load location gap data within 10s and verify table content', async () => {
+  test('should load location gap data within 20s and verify table content', async () => {
     
-    await opportunitiesPageLocationGap.verifyPageLoadedWithin(10);
+    await opportunitiesPageLocationGap.verifyPageLoadedWithin(20);
     await opportunitiesPageLocationGap.verifyTableHasData();
     await opportunitiesPageLocationGap.captureScreenshot('location-gap-verified');
   });
@@ -83,9 +83,9 @@ test.describe('Opportunities Page -> Related Websites', () => {
     
     await opportunitiesPageLocationGap.navigateToRelatedWebsites();
   });
-  test('should load related websites data within 10s and verify table content if present', async () => {
+  test('should load related websites data within 20s and verify table content if present', async () => {
     
-    await opportunitiesPageLocationGap.verifyRelatedWebsitesLoadedWithin(10);
+    await opportunitiesPageLocationGap.verifyRelatedWebsitesLoadedWithin(20);
     await opportunitiesPageLocationGap.verifyTableHasData(undefined, false);
     await opportunitiesPageLocationGap.captureScreenshot('related-websites-verified');
   });

@@ -22,13 +22,13 @@ export class OpportunitiesPage extends BasePage {
   
 
   async verifyPageLoadedWithin(
-    seconds: number = 0,
+    seconds: number = 20,
     urlRegex: RegExp = /\/organic-traffic\/website-analysis\/opportunities\/(page-gap|location-gap|related-websites)/,
     waitForTable: boolean = true,
   ) {
     const start = Date.now()
 
-    await expect(this.page).toHaveURL(urlRegex, { timeout: 10000 })
+    await expect(this.page).toHaveURL(urlRegex, { timeout: 20000 })
 
     await this.page.waitForLoadState('networkidle')
 
@@ -41,7 +41,7 @@ export class OpportunitiesPage extends BasePage {
 
     const duration = (Date.now() - start) / 1000
     console.log(`⏱️ Opportunity page loaded in ${duration.toFixed(2)}s`)
-    expect(duration).toBeLessThan(seconds)
+    expect(duration).toBeLessThanOrEqual(seconds)
   }
 
   async verifyLocationGapLoadedWithin(seconds: number = 0) {

@@ -2,7 +2,6 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
-import { Script } from 'vm';
 
 /**
  * Read environment variables from .env file.
@@ -13,7 +12,9 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
  * PRE-RUN UTILITIES
  * Senior Practice: Automating directory maintenance.
  */
-const STORAGE_STATE = path.join(__dirname, 'playwright/.auth/user.json');
+const STORAGE_STATE = process.env.PLAYWRIGHT_STORAGE_STATE
+  ? path.resolve(process.env.PLAYWRIGHT_STORAGE_STATE)
+  : path.join(__dirname, 'playwright/.auth/user.json');
 const SCREENSHOT_DIR = path.join(__dirname, 'screenshots');
 
 // Ensure the auth directory exists
@@ -49,8 +50,7 @@ export default defineConfig({
 
   use: {
     /* Base URL to use in actions like `await page.goto('/')` */
-    
-    baseURL: process.env.BASE_URL || 'https://stage.app.deepci.com',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || process.env.BASE_URL || 'https://stage.app.deepci.com',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',

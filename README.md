@@ -5,8 +5,9 @@ Ths is for PMI Website FE automation regressing testing
 ## Command to open browser called to execute the test `--project=chromium --headed`
 
 
-npx playwright test smoketest.spec.ts --project=chromium --headed
+npx playwright test tests/website-analysis.spec.ts --project=chromium --headed
 
+npm run test:stage
 
 ## Command to show full test execution report
 
@@ -49,7 +50,29 @@ export default defineConfig({
 });
 
 
-Environment Variables: If your tests rely on dynamic URLs, credentials, or other settings, use environment variables in your Playwright code (e.g., process.env.PLAYWRIGHT_BASE_URL). You'll set these in GitLab CI/CD.
+Environment Variables: If your tests rely on dynamic URLs, credentials, or other settings, use environment variables in your Playwright code (e.g., process.env.PLAYWRIGHT_BASE_URL). For local development, copy .env.example to .env and set USER_EMAIL and USER_PASS.
+
+Example .env values:
+
+USER_EMAIL=your.email@example.com
+USER_PASS=yourpassword
+PLAYWRIGHT_BASE_URL=https://stage.app.deepci.com
+
+If you already have a valid authentication storage state saved in `playwright/.auth/user.json`, the auth setup step will reuse it and skip login.
+
+If you do not have a valid storage state file, you can either:
+
+- use valid credentials in `./.env`
+- or generate storage state from a working login session using the helper script
+
+Generate storage state with either automatic credentials or manual login:
+
+npm run auth:generate
+
+You can also provide a custom storage state file with:
+
+PLAYWRIGHT_STORAGE_STATE=path/to/auth.json npx playwright test tests/website-analysis.spec.ts --reporter=list
+
 2. Define the GitLab CI/CD Configuration (.gitlab-ci.yml)
 Create a file named .gitlab-ci.yml at the root of your GitLab repository. This file defines your CI/CD pipeline.
 

@@ -4,7 +4,7 @@ test('Scan for duplicate High Value KWs in modal', async ({ page }) => {
   await page.goto('https://stage.app.deepci.com/ppc/weekly/brand-top-list')
 
   await page.fill('input[type="email"], input[name="username"]', 'jayson.gesim@everymatrix.com')
-  await page.fill('input[type="password"]', 'ff')
+  await page.fill('input[type="password"]', '12345678')
   await page.click('button[type="submit"]')
 
   await page.waitForURL((url) => url.href.includes('brand-top-list'))
