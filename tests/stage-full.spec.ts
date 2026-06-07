@@ -32,7 +32,7 @@ const optionalTableRoutes = new Set([
   '/brand/x4yx/1/overview',
 ])
 
-test.describe('DeepCI Stage positive flows', () => {
+test.describe('PMI Stage positive flows', () => {
   test('should load Website Overview, verify the page, and search a brand', async ({ page }) => {
     const overviewPage = new WebsiteOverviewPage(page)
     await overviewPage.navigateTo('/organic-traffic/website-analysis/website-overview')
@@ -80,7 +80,7 @@ test.describe('DeepCI Stage positive flows', () => {
   })
 })
 
-test.describe('DeepCI Stage additional page coverage', () => {
+test.describe('PMI Stage additional page coverage', () => {
   for (const routeInfo of stageRoutes) {
     test(`should load and validate ${routeInfo.name}`, async ({ page }) => {
       const stagePage = new StagePage(page)
@@ -88,7 +88,7 @@ test.describe('DeepCI Stage additional page coverage', () => {
       await stagePage.verifyPageLoaded(routeInfo.route)
 
       if (searchRoutes.has(routeInfo.route)) {
-        await stagePage.submitSearch('deepci')
+        await stagePage.submitSearch('DEEPCI')
       } else {
         await stagePage.verifyTableHasData(!optionalTableRoutes.has(routeInfo.route))
       }
@@ -98,7 +98,7 @@ test.describe('DeepCI Stage additional page coverage', () => {
   }
 })
 
-test.describe('DeepCI Stage negative flows', () => {
+test.describe('PMI Stage negative flows', () => {
   test('should show no results for an unknown brand search', async ({ page }) => {
     const overviewPage = new WebsiteOverviewPage(page)
     await overviewPage.navigateTo('/organic-traffic/website-analysis/website-overview')
