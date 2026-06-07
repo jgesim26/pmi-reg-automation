@@ -4,7 +4,7 @@ import { TrendingWebsitesPage } from '../pages/TrendingWebsitesPage'
 import { OpportunitiesPage } from '../pages/OpportunitiesPage'
 import { StagePage } from '../pages/StagePage'
 
-const unknownBrand = 'UNKNOWN-BRAND-APPROX-123'
+const unknownBrand = '1exampleBET365'
 
 const stageRoutes = [
   { route: '/organic-traffic/affiliate-monitoring/your-websites', name: 'Your Websites' },
@@ -88,7 +88,7 @@ test.describe('PMI Stage additional page coverage', () => {
       await stagePage.verifyPageLoaded(routeInfo.route)
 
       if (searchRoutes.has(routeInfo.route)) {
-        await stagePage.submitSearch('DEEPCI')
+        await stagePage.submitSearch('BET365')
       } else {
         await stagePage.verifyTableHasData(!optionalTableRoutes.has(routeInfo.route))
       }
