@@ -44,7 +44,8 @@ jobs:
         run: npx playwright test tests/duplicate-check.spec.ts tests/stage-full.spec.ts tests/website-analysis.spec.ts
 
       - name: Note outcome
-        run: echo "Findings run finished with outcome:: ${{ steps.findings.outcome }} (report-only, non-blocking)"
+        run: |
+          echo "Findings run finished with outcome ${{ steps.findings.outcome }} (report-only, non-blocking)"
 
       - name: Upload HTML report
         if: ${{ !cancelled() }}
