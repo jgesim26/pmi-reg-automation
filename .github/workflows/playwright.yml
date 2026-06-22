@@ -1,58 +1,73 @@
-# .github/workflows/playwright.yml
-
-name: PMI Smoke Testing
+# End-to-end system check against the live staging app.
+# Runs the module health check, sidebar navigation, and the brand/location
+# matrix on a schedule, on push/PR, and on demand. Results are published as an
+# HTML report + screenshots artifact.
+name: PMI System E2E
 
 on:
   push:
-    branches: [ main, master, develop ] # Trigger on push to these branches
+    branches: [main, master, develop]
   pull_request:
-    branches: [ main, master, develop ] # Trigger on pull request to these branches
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+    branches: [main, master, develop]
+  workflow_dispatch: # manual trigger from the Actions tab
   schedule:
-    - cron: '0 0 * * *' # Optional: Run daily at midnight UTC
+    - cron: '0 6 * * *' # daily at 06:00 UTC
+
+# Cancel an in-progress run when a newer commit is pushed to the same ref.
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
-    timeout-minutes: 60 # Set a timeout for the entire job
-    runs-on: ubuntu-latest # Specify the runner environment (Linux, Windows, macOS)
-    
-    # Optional: Define strategy for running tests in parallel across different browsers
-    strategy:
-      fail-fast: false # Don't fail the whole job immediately if one browser fails
-      matrix:
-        browser: [chromium, firefox, webkit] # Run tests on all three browsers
-       # browser: [chromium] # For faster feedback, start with one browser
-      
-
+  e2e:
+    name: System E2E (chromium)
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4 # Action to check out your code
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20 # Use a specific Node.js version (e.g., 18, 20, 22)
-        cache: 'npm' # Cache npm dependencies for faster builds
-        cache-dependency-path: '**/package-lock.json' # Path to lock file
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
-    - name: Install dependencies
-      run: npm ci # Use npm ci for clean installs in CI environments
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Install Playwright browsers
-      run: npx playwright install --with-deps # Install all necessary browser binaries and their dependencies
+      - name: Install Playwright (chromium + deps)
+        run: npx playwright install --with-deps chromium
 
-    - name: Run Playwright tests
-      run: npx playwright test smoketest.spec.ts  # Command to run your tests
-      env:
-        
-        PLAYWRIGHT_BASE_URL: ${{ secrets.GITHUB_TOKEN.PLAYWRIGHT_BASE_URL }} 
-        #     # You might need other env variables for login credentials etc.
-        #     PM_USERNAME: ${{ secrets.PM_USERNAME }}  PM_PASSWORD: ${{ secrets.PM_PASSWORD }}
+      - name: Run E2E system check
+        env:
+          # Configure these in: repo Settings → Secrets and variables → Actions
+          USER_EMAIL: ${{ secrets.USER_EMAIL }}
+          USER_PASS: ${{ secrets.USER_PASS }}
+          # Optional override; falls back to https://stage.app.deepci.com when unset.
+          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }}
+        run: npx playwright test tests/system-check.spec.ts tests/navigation.spec.ts tests/matrix.spec.ts
 
-    - name: Upload Playwright test results
-      if: always() # Upload artifacts even if the previous step failed
-      uses: actions/upload-artifact@v4
-      with:
-        name: playwright-report-${{ matrix.browser }} # Name the report based on the browser
-        path: playwright-report/ # Path to Playwright's default report directory
-        retention-days: 5 # How long to keep the artifact
+      - name: Upload HTML report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots/
+          retention-days: 14
+
+      - name: Upload traces & test-results (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7

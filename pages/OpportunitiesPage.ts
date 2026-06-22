@@ -28,9 +28,8 @@ export class OpportunitiesPage extends BasePage {
   ) {
     const start = Date.now()
 
-    await expect(this.page).toHaveURL(urlRegex, { timeout: 20000 })
-
-    await this.page.waitForLoadState('networkidle')
+    await this.expectUrl(urlRegex)
+    await this.waitForNetworkIdle()
 
     if (waitForTable) {
       const tableCount = await this.table.count()
@@ -71,9 +70,7 @@ export class OpportunitiesPage extends BasePage {
       return
     }
 
-    await this.table.evaluate((node) => {
-      ;(node as HTMLElement).style.border = '3px solid #28a745'
-    })
+    await this.highlight(this.table, '#28a745')
 
     const screenshotPath = path.join(
       process.cwd(),

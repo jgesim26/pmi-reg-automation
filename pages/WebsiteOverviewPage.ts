@@ -20,18 +20,12 @@ export class WebsiteOverviewPage extends BasePage {
 
     if (await headingLocator.count()) {
       await expect(headingLocator).toBeVisible({ timeout: 15000 })
-      await headingLocator.evaluate((node) => {
-        ;(node as HTMLElement).style.border = '2px solid #00ffcc'
-        ;(node as HTMLElement).style.padding = '4px'
-      })
+      await this.highlight(headingLocator)
       return
     }
 
     await expect(fallbackLocator).toBeVisible({ timeout: 15000 })
-    await fallbackLocator.evaluate((node) => {
-      ;(node as HTMLElement).style.border = '2px solid #00ffcc'
-      ;(node as HTMLElement).style.padding = '4px'
-    })
+    await this.highlight(fallbackLocator)
   }
 
   async searchAndSelectBrand(brand: string) {
@@ -61,10 +55,7 @@ export class WebsiteOverviewPage extends BasePage {
       const normalizedText = text.trim()
       const locator = this.page.getByText(normalizedText, { exact: false }).first()
       await expect(locator).toBeVisible({ timeout: 15000 })
-      await locator.evaluate((node) => {
-        ;(node as HTMLElement).style.border = '2px solid #00ffcc'
-        ;(node as HTMLElement).style.padding = '4px'
-      })
+      await this.highlight(locator)
     }
   }
 }
