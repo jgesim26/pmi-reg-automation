@@ -1,0 +1,63 @@
+# Non-blocking "findings" run for specs that fail by design or on known
+# product gaps (duplicate detection, staging pages with no data, live-search
+# data flake). These never block CI — they publish their findings as artifacts
+# so the team can review them on a schedule or on demand.
+name: PMI Findings (report-only)
+
+on:
+  workflow_dispatch: # manual trigger from the Actions tab
+  schedule:
+    - cron: '0 7 * * 1' # weekly, Mondays 07:00 UTC
+
+concurrency:
+  group: findings-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  findings:
+    name: Findings report (chromium)
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright (chromium + deps)
+        run: npx playwright install --with-deps chromium
+
+      - name: Run findings specs (non-blocking)
+        id: findings
+        continue-on-error: true # these specs may report failures by design
+        env:
+          USER_EMAIL: ${{ secrets.USER_EMAIL }}
+          USER_PASS: ${{ secrets.USER_PASS }}
+          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }}
+        run: npx playwright test tests/duplicate-check.spec.ts tests/stage-full.spec.ts tests/website-analysis.spec.ts
+
+      - name: Note outcome
+        run: echo "Findings run finished with outcome:: ${{ steps.findings.outcome }} (report-only, non-blocking)"
+
+      - name: Upload HTML report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: findings-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: findings-screenshots
+          path: screenshots/
+          retention-days: 30
