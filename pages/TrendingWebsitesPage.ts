@@ -23,26 +23,15 @@ export class TrendingWebsitesPage extends BasePage {
   }
 
   async verifyPageLoadedWithin(seconds: number = 20) {
-    const start = Date.now()
-
-    await expect(this.page).toHaveURL(/\/trending-websites\?.*brand_id=my/, { timeout: 20000 })
-
-    await this.page.waitForLoadState('networkidle')
+    await this.verifyUrlLoadedWithin(/\/trending-websites\?.*brand_id=my/, seconds, 'Trending Page')
     await expect(this.table).toBeVisible({ timeout: seconds * 1000 })
-
-    const duration = (Date.now() - start) / 1000
-    console.log(`⏱️ Trending Page loaded in ${duration.toFixed(2)}s`)
-    expect(duration).toBeLessThanOrEqual(seconds)
   }
 
   async verifyTableHasData() {
-    await this.table.locator('tr:visible').first()
     const count = await this.tableRows.count()
 
     if (count > 0) {
-      await this.table.evaluate((node) => {
-        ;(node as HTMLElement).style.border = '3px solid #28a745'
-      })
+      await this.highlight(this.table, '#28a745')
     }
     expect(count, 'Data table should not be empty').toBeGreaterThan(0)
   }

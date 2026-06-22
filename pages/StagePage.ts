@@ -1,7 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test'
-import { BasePage } from './BasePage'
-
-const DEFAULT_TIMEOUT = 20000
+import { BasePage, DEFAULT_TIMEOUT } from './BasePage'
 
 function escapeRegex(text: string) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -21,34 +19,17 @@ export class StagePage extends BasePage {
     this.table = page.locator('table').first()
   }
 
-  async navigateTo(route: string) {
-    await this.page.goto(route, {
-      waitUntil: 'networkidle',
-      timeout: 60000,
-    })
-  }
-
   async verifyPageLoaded(route: string) {
     const urlPattern = new RegExp(escapeRegex(route))
-    await expect(this.page).toHaveURL(urlPattern, { timeout: DEFAULT_TIMEOUT })
-    await this.page.waitForLoadState('networkidle')
+    await this.expectUrl(urlPattern)
+    await this.waitForNetworkIdle()
     if (await this.pageHeading.count()) {
       await expect(this.pageHeading).toBeVisible({ timeout: DEFAULT_TIMEOUT })
     }
   }
 
   async verifyTableHasData(failIfEmpty = true) {
-    const tableCount = await this.table.count()
-    if (tableCount === 0) {
-      if (failIfEmpty) {
-        expect(tableCount, 'Expected a data table on the page').toBeGreaterThan(0)
-      }
-      return
-    }
-
-    await expect(this.table).toBeVisible({ timeout: DEFAULT_TIMEOUT })
-    const rowCount = await this.table.locator('tr').count()
-    expect(rowCount, 'Expected at least one row in the data table').toBeGreaterThan(0)
+    await this.assertTableHasData(this.table, failIfEmpty)
   }
 
   async verifySearchAvailable() {
