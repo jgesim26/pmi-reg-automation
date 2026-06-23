@@ -6,31 +6,18 @@ import { StagePage } from '../pages/StagePage'
 
 const unknownBrand = '1exampleBET365'
 
+/**
+ * Deep-link detail pages that are NOT in the module registry (modules.data.ts),
+ * so the generic system-check spec never visits them. The standard modules
+ * (Your Websites, PPC lists, Telegram/Kick channels, etc.) are covered there;
+ * here we only keep the routes system-check can't reach. These detail pages
+ * don't always render a standard data table, so their table check is optional.
+ */
 const stageRoutes = [
-  { route: '/organic-traffic/affiliate-monitoring/your-websites', name: 'Your Websites' },
-  { route: '/organic-traffic/affiliate-monitoring/position-changes/brand-demoted', name: 'Position Changes' },
-  { route: '/organic-traffic/market-research/website-search', name: 'Website Search' },
-  { route: '/organic-traffic/market-research/market-position/brand-market-share', name: 'Brand Market Share' },
-  { route: '/ppc/weekly/website-top-list', name: 'PPC Website Top List' },
-  { route: '/ppc/weekly/brand-top-list', name: 'PPC Brand Top List' },
-  { route: '/ppc/weekly/keyword-list', name: 'PPC Keyword List' },
-  { route: '/ppc/weekly/black-hat', name: 'PPC Black Hat' },
-  { route: '/ppc/weekly/keyword-bidding', name: 'PPC Keyword Bidding' },
-  { route: '/ppc/brand-bidding', name: 'PPC Brand Bidding' },
-  { route: '/keyword-search', name: 'Keyword Search' },
-  { route: '/telegram/channels', name: 'Telegram Channels' },
-  { route: '/kick/channels', name: 'Kick Channels' },
   { route: '/organic/website/2B7E/3/2/top-pages', name: 'Flashscore Top Pages' },
   { route: '/organic/website/7JrZ/43/2/top-pages', name: 'Meczyki Top Pages' },
   { route: '/brand/x4yx/1/overview', name: 'Brand Overview' },
 ]
-
-const searchRoutes = new Set(['/organic-traffic/market-research/website-search', '/keyword-search'])
-const optionalTableRoutes = new Set([
-  '/organic/website/2B7E/3/2/top-pages',
-  '/organic/website/7JrZ/43/2/top-pages',
-  '/brand/x4yx/1/overview',
-])
 
 test.describe('PMI Stage positive flows', () => {
   test('should load Website Overview, verify the page, and search a brand', async ({ page }) => {
@@ -80,18 +67,15 @@ test.describe('PMI Stage positive flows', () => {
   })
 })
 
-test.describe('PMI Stage additional page coverage', () => {
+test.describe('PMI Stage deep-link detail pages', () => {
   for (const routeInfo of stageRoutes) {
     test(`should load and validate ${routeInfo.name}`, async ({ page }) => {
       const stagePage = new StagePage(page)
       await stagePage.navigateTo(routeInfo.route)
       await stagePage.verifyPageLoaded(routeInfo.route)
 
-      if (searchRoutes.has(routeInfo.route)) {
-        await stagePage.submitSearch('BET365')
-      } else {
-        await stagePage.verifyTableHasData(!optionalTableRoutes.has(routeInfo.route))
-      }
+      // Detail pages may not render a standard table — verify load, table optional.
+      await stagePage.verifyTableHasData(false)
 
       await stagePage.captureScreenshot(`stage-${routeInfo.name.toLowerCase().replace(/\s+/g, '-')}`)
     })
