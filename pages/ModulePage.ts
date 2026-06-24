@@ -144,14 +144,33 @@ export class ModulePage extends BasePage {
     this.record('Interactive controls', ok, `${selects} filter(s), ${searches} search input(s)`)
   }
 
-  /** Exercise search: type a term, submit, confirm the page does not break. */
+  /**
+   * Exercise search from a CLEAN state and confirm the page does not break.
+   *
+   * Earlier checks (notably `verifySorting`) push params like `order_by` into
+   * the URL. On some list pages (e.g. PPC Brand Top List) the backend rejects a
+   * combined sort+search query and the grid errors with "Something went wrong
+   * loading the data" — a real defect, but unrelated to whether *search itself*
+   * works. So we reset to the bare route before searching to isolate the search
+   * feature. (The sort+search interaction is tracked separately as a finding.)
+   */
   async verifySearch(term = 'casino') {
-    const input = this.main.locator('input[type="search"], input[placeholder*="search" i]').first()
-    if (!(await input.count())) {
+    if (!(await this.main.locator('input[type="search"], input[placeholder*="search" i]').first().count())) {
       this.record('Search (optional)', true, 'no in-page search input')
       return
     }
     try {
+      // Reset any sort/filter the prior checks pushed into the query string.
+      const u = new URL(this.getCurrentUrl())
+      await this.page.goto(u.origin + u.pathname, { waitUntil: 'domcontentloaded', timeout: 45000 })
+      await this.page.locator('table, .q-card').first().waitFor({ timeout: 15000 }).catch(() => {})
+      await this.page.waitForTimeout(1200)
+
+      const input = this.main.locator('input[type="search"], input[placeholder*="search" i]').first()
+      if (!(await input.count())) {
+        this.record('Search (optional)', true, 'no in-page search input after reset')
+        return
+      }
       await input.fill(term)
       await input.press('Enter')
       await this.page.waitForTimeout(2000)
