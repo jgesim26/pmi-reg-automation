@@ -1,7 +1,8 @@
 # End-to-end system check against the live staging app.
-# Runs the module health check, sidebar navigation, and the brand/location
-# matrix on a schedule, on push/PR, and on demand. Results are published as an
-# HTML report + screenshots artifact.
+# Runs the module health check, sidebar navigation, the brand/location matrix,
+# the website-search filters, and login/search validation on a schedule, on
+# push/PR, and on demand. Results are published as an HTML report + screenshots
+# artifact.
 name: PMI System E2E
 
 on:
@@ -46,7 +47,7 @@ jobs:
           USER_PASS: ${{ secrets.USER_PASS }}
           # Optional override; falls back to https://stage.app.deepci.com when unset.
           PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }}
-        run: npx playwright test tests/system-check.spec.ts tests/navigation.spec.ts tests/matrix.spec.ts
+        run: npx playwright test tests/system-check.spec.ts tests/navigation.spec.ts tests/matrix.spec.ts tests/website-search-filters.spec.ts tests/validation.spec.ts
 
       - name: Upload HTML report
         if: ${{ !cancelled() }}
