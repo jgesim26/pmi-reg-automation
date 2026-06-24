@@ -1,6 +1,9 @@
 import { test } from '@playwright/test'
 import { ModulePage } from '../pages/ModulePage'
 import { MODULES } from './modules.data'
+import { recordRoute } from './url-annotation'
+
+recordRoute()
 
 /**
  * End-user system check: visits every module and verifies its core components

@@ -1,6 +1,9 @@
 import { test, expect, Page } from '@playwright/test'
 import { LoginPage } from '../pages/LoginPage'
 import { WebsiteOverviewPage } from '../pages/WebsiteOverviewPage'
+import { recordRoute } from './url-annotation'
+
+recordRoute()
 
 const emailInput = (page: Page) =>
   page.locator('input[type="email"], input[placeholder*="user" i], input[placeholder*="email" i]').first()

@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test'
 import { ModulePage } from '../pages/ModulePage'
 import { Filters } from '../pages/Filters'
 import { MODULES } from './modules.data'
+import { recordRoute } from './url-annotation'
+
+recordRoute()
 
 /**
  * Multi-brand / location coverage. Runs key modules across several locations

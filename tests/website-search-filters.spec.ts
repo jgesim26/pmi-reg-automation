@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test'
 import { Filters } from '../pages/Filters'
+import { recordRoute } from './url-annotation'
+
+recordRoute()
 
 /**
  * Website-search grid filters.
