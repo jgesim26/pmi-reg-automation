@@ -17,6 +17,5 @@ screenshots/
 test-results/
 playwright-report/
 blob-report/
-
-# Playwright
-/playwright/.auth/
+# Generated each run by custom-reporter.ts (large, embeds base64 screenshots)
+custom-report.html
