@@ -4,7 +4,9 @@ import * as path from 'path';
 import { exec } from 'child_process';
 
 class MyCustomReporter implements Reporter {
-  private results: any[] = [];
+  // Keyed by test id so retries overwrite earlier attempts (one row per test,
+  // reflecting the final attempt) rather than producing duplicate rows.
+  private results = new Map<string, any>();
 
   onTestEnd(test: TestCase, result: TestResult) {
     const rawMessage = result.error?.message || '';
@@ -19,34 +21,61 @@ class MyCustomReporter implements Reporter {
       screenshotBase64 = fs.readFileSync(screenshotAttachment.path).toString('base64');
     }
 
-    this.results.push({
+    // Full test name incl. describe blocks (drop the project + spec-file path
+    // entries that titlePath() prepends).
+    const titlePath = test.titlePath();
+    const fileIdx = titlePath.findIndex(t => t.includes('.spec.') || t.endsWith('.ts'));
+    const fullTitle = (fileIdx >= 0 ? titlePath.slice(fileIdx + 1) : titlePath.filter(Boolean)).join(' › ');
+    const specFile = path.basename(test.location?.file || 'unknown');
+    const started = result.startTime
+      ? new Date(result.startTime).toISOString().replace('T', ' ').slice(0, 19) + ' UTC'
+      : 'N/A';
+
+    this.results.set(test.id, {
       page: test.title.split('-')[0].trim(),
+      fullTitle: fullTitle || test.title,
+      specFile,
       url: testUrl,
       status: result.status,
       reason: cleanReason,
       screenshot: screenshotBase64,
-      duration: (result.duration / 1000).toFixed(2) // in seconds
+      duration: (result.duration / 1000).toFixed(2), // in seconds
+      started,
+      retry: result.retry,                 // retries used to reach this result
+      flaky: test.outcome() === 'flaky',   // passed only after one or more retries
     });
   }
 
   async onEnd(result: FullResult) {
     const reportPath = path.resolve('custom-report.html');
     
+    const results = [...this.results.values()];
+
     // Fallback: Show results in terminal so you know it finished
     console.log('\n--- Test Execution Finished ---');
-    console.table(this.results.map(r => ({ Page: r.page, Status: r.status })));
+    console.table(results.map(r => ({ Page: r.page, Status: r.status, Flaky: r.flaky ? 'yes' : '', Duration: `${r.duration}s` })));
 
-    const total = this.results.length;
-    const passed = this.results.filter(r => r.status === 'passed').length;
-    const failed = this.results.filter(r => r.status !== 'passed').length;
+    const total = results.length;
+    const passed = results.filter(r => r.status === 'passed').length;
+    const failed = results.filter(r => r.status !== 'passed').length;
+    const flakyCount = results.filter(r => r.flaky).length;
 
-    const rows = this.results.map(res => `
+    const esc = (s: string) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    const rows = results.map(res => `
       <tr class="${res.status}">
-        <td><strong>${res.page}</strong><br><small style="color:#94a3b8">${res.duration}s</small></td>
-        <td><a href="${res.url}" target="_blank">${res.url}</a></td>
-        <td><span class="status-pill ${res.status}">${res.status.toUpperCase()}</span></td>
+        <td><strong>${esc(res.page)}</strong></td>
+        <td class="name-cell">${esc(res.fullTitle)}</td>
+        <td><code>${esc(res.specFile)}</code></td>
+        <td><a href="${esc(res.url)}" target="_blank">${esc(res.url)}</a></td>
+        <td>
+            <span class="status-pill ${res.status}">${res.status.toUpperCase()}</span>
+            ${res.flaky ? `<br><span class="status-pill flaky" title="passed after ${res.retry} ${res.retry === 1 ? 'retry' : 'retries'}">FLAKY · ${res.retry}×</span>` : ''}
+        </td>
+        <td class="num">${res.duration}s</td>
+        <td class="ts">${esc(res.started)}</td>
         <td class="reason-cell">
-            <div>${res.reason}</div>
+            <div>${esc(res.reason)}</div>
             ${res.screenshot ? `
                 <div class="screenshot-container">
                     <img src="data:image/png;base64,${res.screenshot}" onclick="window.open(this.src)" />
@@ -69,10 +98,17 @@ class MyCustomReporter implements Reporter {
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
         th { background: #f1f5f9; padding: 12px; text-align: left; font-size: 12px; color: #475569; border-bottom: 2px solid #e2e8f0; }
         td { padding: 12px; border-bottom: 1px solid #f1f5f9; vertical-align: top; font-size: 14px; }
-        .status-pill { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .status-pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
         .status-pill.passed { background: #dcfce7; color: #166534; }
-        .status-pill.failed { background: #fee2e2; color: #991b1b; }
-        .reason-cell { font-family: monospace; font-size: 12px; white-space: pre-wrap; }
+        .status-pill.failed, .status-pill.timedOut, .status-pill.interrupted { background: #fee2e2; color: #991b1b; }
+        .status-pill.skipped { background: #e2e8f0; color: #475569; }
+        .status-pill.flaky { background: #fef3c7; color: #92400e; margin-top: 4px; }
+        .card.flaky { border-top-color: #f59e0b; }
+        .name-cell { font-size: 13px; color: #1e293b; max-width: 320px; }
+        .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: #475569; }
+        .ts { font-size: 12px; color: #64748b; white-space: nowrap; }
+        td code { font-size: 12px; color: #334155; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+        .reason-cell { font-family: monospace; font-size: 12px; white-space: pre-wrap; max-width: 360px; }
         .screenshot-container img { max-width: 150px; border: 1px solid #ddd; margin-top: 10px; cursor: pointer; }
       </style>
     </head>
@@ -82,9 +118,13 @@ class MyCustomReporter implements Reporter {
         <div class="card"><strong>Total</strong><p>${total}</p></div>
         <div class="card passed"><strong>Passed</strong><p>${passed}</p></div>
         <div class="card failed"><strong>Failed</strong><p>${failed}</p></div>
+        <div class="card flaky"><strong>Flaky</strong><p>${flakyCount}</p></div>
       </div>
       <table>
-        <thead><tr><th>Page</th><th>URL</th><th>Status</th><th>Reason/Screenshot</th></tr></thead>
+        <thead><tr>
+          <th>Page</th><th>Test Name</th><th>Spec File</th><th>URL</th>
+          <th>Status</th><th>Duration</th><th>Started</th><th>Reason/Screenshot</th>
+        </tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </body>
