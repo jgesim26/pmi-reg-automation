@@ -8,10 +8,25 @@ class MyCustomReporter implements Reporter {
   // reflecting the final attempt) rather than producing duplicate rows.
   private results = new Map<string, any>();
 
+  // Spec file -> human-friendly feature area, so the "Area" sub-label is always
+  // meaningful even when a test has no describe block.
+  private static readonly SPEC_FEATURE: Record<string, string> = {
+    'validation.spec.ts': 'Login & Search Validation',
+    'website-search-filters.spec.ts': 'Website Search',
+    'system-check.spec.ts': 'System Check',
+    'navigation.spec.ts': 'Sidebar Navigation',
+    'matrix.spec.ts': 'Location / Brand Matrix',
+    'website-analysis.spec.ts': 'Website Analysis',
+    'stage-full.spec.ts': 'Stage',
+    'duplicate-check.spec.ts': 'Duplicate Check',
+    'auth.setup.ts': 'Authentication',
+  };
+
   onTestEnd(test: TestCase, result: TestResult) {
     const rawMessage = result.error?.message || '';
-    const cleanReason = rawMessage.replace(/\u001b\[\d+m/g, '') || (result.status === 'passed' ? 'Success' : 'N/A');
-    const testUrl = test.annotations.find(a => a.type === 'url')?.description || 'N/A';
+    const cleanReason = rawMessage.replace(/\u001b\[\d+m/g, '') || (result.status === 'passed' ? 'Passed' : '—');
+    // The latest 'url' annotation: specs record the route they exercised.
+    const testUrl = [...test.annotations].reverse().find(a => a.type === 'url')?.description || '';
 
     // Find screenshot
     const screenshotAttachment = result.attachments.find(a => a.name === 'screenshot');
@@ -21,19 +36,37 @@ class MyCustomReporter implements Reporter {
       screenshotBase64 = fs.readFileSync(screenshotAttachment.path).toString('base64');
     }
 
-    // Full test name incl. describe blocks (drop the project + spec-file path
-    // entries that titlePath() prepends).
     const titlePath = test.titlePath();
     const fileIdx = titlePath.findIndex(t => t.includes('.spec.') || t.endsWith('.ts'));
-    const fullTitle = (fileIdx >= 0 ? titlePath.slice(fileIdx + 1) : titlePath.filter(Boolean)).join(' › ');
+    const describes = fileIdx >= 0 ? titlePath.slice(fileIdx + 1, -1).filter(Boolean) : [];
+    const leaf = test.title;
     const specFile = path.basename(test.location?.file || 'unknown');
+
+    // Page (subject under test) + Area (higher-level feature/group).
+    // System-check titles look like "[Group] Module" -> Page=Module, Area=Group.
+    const bracket = leaf.match(/^\[([^\]]+)\]\s*(.+)$/);
+    const feature = MyCustomReporter.SPEC_FEATURE[specFile] || specFile.replace(/\.(spec|setup)\.ts$/, '');
+    const page = bracket ? bracket[2].trim() : (describes[0] || feature);
+    const area = bracket ? bracket[1].trim() : feature;
+    // Scenario shown in the Test Name column (avoid repeating the Page value).
+    const scenario = bracket ? (describes.join(' › ') || 'module health checks') : leaf;
+
+    // Positive / Negative / Functional, inferred from common test naming.
+    const kind = /\b(negative|invalid|error|reject|fail|no results|empty|whitespace|blocked|wrong|unknown)\b/i.test(leaf)
+      ? 'Negative'
+      : /\b(positive|valid|success|enable|render|load|present|works?|functional|reachable)\b/i.test(leaf)
+        ? 'Positive'
+        : 'Functional';
+
     const started = result.startTime
       ? new Date(result.startTime).toISOString().replace('T', ' ').slice(0, 19) + ' UTC'
       : 'N/A';
 
     this.results.set(test.id, {
-      page: test.title.split('-')[0].trim(),
-      fullTitle: fullTitle || test.title,
+      page,
+      area,
+      scenario,
+      kind,
       specFile,
       url: testUrl,
       status: result.status,
@@ -53,7 +86,7 @@ class MyCustomReporter implements Reporter {
 
     // Fallback: Show results in terminal so you know it finished
     console.log('\n--- Test Execution Finished ---');
-    console.table(results.map(r => ({ Page: r.page, Status: r.status, Flaky: r.flaky ? 'yes' : '', Duration: `${r.duration}s` })));
+    console.table(results.map(r => ({ Area: r.area, Page: r.page, Type: r.kind, Status: r.status, Flaky: r.flaky ? 'yes' : '', Duration: `${r.duration}s` })));
 
     const total = results.length;
     const passed = results.filter(r => r.status === 'passed').length;
@@ -64,10 +97,13 @@ class MyCustomReporter implements Reporter {
 
     const rows = results.map(res => `
       <tr class="${res.status}">
-        <td><strong>${esc(res.page)}</strong></td>
-        <td class="name-cell">${esc(res.fullTitle)}</td>
+        <td><strong>${esc(res.page)}</strong><br><small class="muted">${esc(res.area)}</small></td>
+        <td class="name-cell">
+            <span class="kind ${res.kind}">${res.kind}</span>
+            <div>${esc(res.scenario)}</div>
+        </td>
         <td><code>${esc(res.specFile)}</code></td>
-        <td><a href="${esc(res.url)}" target="_blank">${esc(res.url)}</a></td>
+        <td>${res.url ? `<a href="${esc(res.url)}" target="_blank"><code>${esc(res.url)}</code></a>` : '<span class="muted">—</span>'}</td>
         <td>
             <span class="status-pill ${res.status}">${res.status.toUpperCase()}</span>
             ${res.flaky ? `<br><span class="status-pill flaky" title="passed after ${res.retry} ${res.retry === 1 ? 'retry' : 'retries'}">FLAKY · ${res.retry}×</span>` : ''}
@@ -105,6 +141,11 @@ class MyCustomReporter implements Reporter {
         .status-pill.flaky { background: #fef3c7; color: #92400e; margin-top: 4px; }
         .card.flaky { border-top-color: #f59e0b; }
         .name-cell { font-size: 13px; color: #1e293b; max-width: 320px; }
+        .muted { color: #94a3b8; font-size: 11px; }
+        .kind { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 4px; }
+        .kind.Positive { background: #dcfce7; color: #166534; }
+        .kind.Negative { background: #fef3c7; color: #92400e; }
+        .kind.Functional { background: #e0e7ff; color: #3730a3; }
         .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: #475569; }
         .ts { font-size: 12px; color: #64748b; white-space: nowrap; }
         td code { font-size: 12px; color: #334155; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
@@ -122,7 +163,7 @@ class MyCustomReporter implements Reporter {
       </div>
       <table>
         <thead><tr>
-          <th>Page</th><th>Test Name</th><th>Spec File</th><th>URL</th>
+          <th>Page / Area</th><th>Test (Type &amp; Scenario)</th><th>Spec File</th><th>Route</th>
           <th>Status</th><th>Duration</th><th>Started</th><th>Reason/Screenshot</th>
         </tr></thead>
         <tbody>${rows}</tbody>

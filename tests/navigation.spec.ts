@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test'
 import { SidebarNav } from '../pages/SidebarNav'
 import { MODULES } from './modules.data'
+import { recordRoute } from './url-annotation'
+
+recordRoute()
 
 /**
  * Verifies the navigation component itself, as an end user would use it:
