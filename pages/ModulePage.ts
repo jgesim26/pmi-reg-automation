@@ -291,35 +291,147 @@ export class ModulePage extends BasePage {
   }
 
   /**
-   * Verify sorting works: clicking a column header reorders the rows (or
-   * refetches via the order_by URL param). Tries several columns since not all
-   * are sortable.
+   * Index of the "identity" column — the first header that isn't a rank ("#"),
+   * blank, or a select/checkbox column. Its cell values (entity names) are
+   * stable text, so their *ordering* is a clean signal that the table reordered,
+   * unlike whole-row innerText which also flips when volatile cells (sparkline
+   * charts, view counts, relative dates) re-render on any interaction.
    */
-  async verifySorting() {
+  private async entityColIndex(): Promise<number> {
+    const heads = (await this.table.locator('thead th').allInnerTexts().catch(() => [])).map((h) => h.replace(/\s+/g, ' ').trim())
+    const i = heads.findIndex((t) => t && t !== '#' && !/^select$/i.test(t))
+    return i < 0 ? 0 : i
+  }
+
+  /** Ordered values of the identity column — the reorder signature. */
+  private async identitySig(col: number): Promise<string> {
+    const cells = this.rows().locator(`td:nth-child(${col + 1})`)
+    const txt = await cells.allInnerTexts().catch(() => [] as string[])
+    return txt.slice(0, 12).map((s) => s.replace(/\s+/g, ' ').trim()).join('|').slice(0, 320)
+  }
+
+  /** The sort-relevant slice of the URL query (order_by / sort / direction / asc|desc). */
+  private sortParamSig(url = this.getCurrentUrl()): string {
+    try {
+      const q = new URL(url).searchParams
+      const parts: string[] = []
+      for (const [k, v] of q.entries()) {
+        if (/order|sort|direction|asc|desc/i.test(k) || /^(asc|desc)$/i.test(v)) parts.push(`${k}=${v}`)
+      }
+      return parts.sort().join('&')
+    } catch {
+      return ''
+    }
+  }
+
+  /**
+   * The header's Font-Awesome sort-icon class, e.g. "fa-sort" (idle),
+   * "fa-sort-up" (asc active) or "fa-sort-down" (desc active); '' when the
+   * column has no sort icon. The app marks every sortable column with this icon
+   * and flips it on click, so it is both the affordance and the reaction signal.
+   */
+  private async sortIconState(th: Locator): Promise<string> {
+    return th
+      .evaluate((el) => {
+        const icon = el.querySelector('i[class*="fa-sort" i]')
+        if (!icon) return ''
+        const m = (icon.getAttribute('class') || '').match(/fa-sort(?:-up|-down)?/i)
+        return m ? m[0].toLowerCase() : 'fa-sort'
+      })
+      .catch(() => '')
+  }
+
+  /** A header advertises sortability iff it carries a fa-sort* icon. */
+  private async headerAffordance(th: Locator): Promise<boolean> {
+    return (await this.sortIconState(th)) !== ''
+  }
+
+  /**
+   * Per-column sorting diagnosis. Clicks every header twice (ascending, then
+   * descending) and records, per column, whether the click reordered the rows
+   * or moved a sort URL param. Classifies each column as:
+   *   working      — reordered / refetched on click
+   *   BROKEN       — advertises a sort affordance but nothing happened on click
+   *   not-sortable — no affordance and no reaction (expected for text/action cols)
+   * Returns the per-column rows (also useful for a standalone diagnostic spec).
+   */
+  async diagnoseSorting(): Promise<
+    { index: number; label: string; affordance: boolean; asc: boolean; desc: boolean; sortable: boolean; status: 'working' | 'BROKEN' | 'not-sortable' }[]
+  > {
     const headers = this.table.locator('thead th')
     const n = await headers.count()
-    if (n === 0) {
+    const out: Awaited<ReturnType<ModulePage['diagnoseSorting']>> = []
+    if (n === 0) return out
+
+    const entityCol = await this.entityColIndex()
+
+    // A click "reacted" if the header's sort-icon state flipped (primary, content
+    // independent), OR the identity-column ordering changed, OR a sort URL param
+    // moved. A change via rows/URL must still hold after a short settle so a
+    // transient re-render flicker doesn't count as a sort.
+    const reacted = async (th: Locator, beforeIcon: string, beforeId: string, beforeParam: string): Promise<boolean> => {
+      const end = Date.now() + 5000
+      while (Date.now() < end) {
+        await this.page.waitForTimeout(400)
+        if ((await this.sortIconState(th)) !== beforeIcon) return true
+        const idMoved = (await this.identitySig(entityCol)) !== beforeId
+        const paramMoved = this.sortParamSig() !== beforeParam
+        if (idMoved || paramMoved) {
+          await this.page.waitForTimeout(500)
+          return (await this.identitySig(entityCol)) !== beforeId || this.sortParamSig() !== beforeParam
+        }
+      }
+      return false
+    }
+
+    for (let idx = 0; idx < n; idx++) {
+      const th = headers.nth(idx)
+      const label = (await th.innerText().catch(() => `#${idx}`)).replace(/\s+/g, ' ').trim().slice(0, 28) || `#${idx}`
+      const affordance = await this.headerAffordance(th)
+
+      // Ascending click.
+      let icon0 = await this.sortIconState(th)
+      let r1 = await this.identitySig(entityCol)
+      let p1 = this.sortParamSig()
+      await th.click({ timeout: 5000 }).catch(() => {})
+      const asc = await reacted(th, icon0, r1, p1)
+
+      // Descending click (toggle).
+      icon0 = await this.sortIconState(th)
+      r1 = await this.identitySig(entityCol)
+      p1 = this.sortParamSig()
+      await th.click({ timeout: 5000 }).catch(() => {})
+      const desc = await reacted(th, icon0, r1, p1)
+
+      const sortable = asc || desc
+      const status: 'working' | 'BROKEN' | 'not-sortable' = sortable ? 'working' : affordance ? 'BROKEN' : 'not-sortable'
+      out.push({ index: idx, label, affordance, asc, desc, sortable, status })
+      console.log(`     · col "${label}" — ${status}${sortable ? ` (asc=${asc} desc=${desc})` : affordance ? ' (advertises sort but no reaction)' : ''}`)
+    }
+    return out
+  }
+
+  /**
+   * Verify sorting works across the table. Uses the per-column diagnosis and
+   * fails when a column that advertises a sort affordance does not react
+   * (a broken sortable column), or when no column sorts at all.
+   */
+  async verifySorting() {
+    const cols = await this.diagnoseSorting()
+    if (cols.length === 0) {
       this.record('Sorting (optional)', true, 'no headers to sort')
       return
     }
-    const rowSig = async () => (await this.rows().allInnerTexts().catch(() => [])).slice(0, 3).join('|').replace(/\s+/g, ' ').slice(0, 140)
+    const working = cols.filter((c) => c.status === 'working').map((c) => c.label)
+    const broken = cols.filter((c) => c.status === 'BROKEN').map((c) => c.label)
 
-    for (const idx of [2, 3, 1, 4, 5].filter((i) => i < n)) {
-      const target = headers.nth(idx)
-      const label = (await target.innerText().catch(() => `#${idx}`)).replace(/\s+/g, ' ').trim().slice(0, 24)
-      const before = await rowSig()
-      const urlBefore = this.getCurrentUrl()
-      await target.click({ timeout: 5000 }).catch(() => {})
-      const end = Date.now() + 6000
-      while (Date.now() < end) {
-        await this.page.waitForTimeout(500)
-        if ((await rowSig()) !== before || this.getCurrentUrl() !== urlBefore) {
-          this.record('Sorting functional', true, `sorting by "${label}" reordered the table`)
-          return
-        }
-      }
+    if (broken.length) {
+      this.record('Sorting functional', false, `broken sortable column(s): [${broken.join(', ')}]; working: [${working.join(', ') || 'none'}]`)
+    } else if (working.length) {
+      this.record('Sorting functional', true, `${working.length} sortable column(s) working: [${working.join(', ')}]`)
+    } else {
+      this.record('Sorting functional', false, 'no column reordered/refetched the table on click')
     }
-    this.record('Sorting functional', false, 'clicking column headers did not reorder/refetch the table')
   }
 
   /** Capture a full-page screenshot for the report. */
