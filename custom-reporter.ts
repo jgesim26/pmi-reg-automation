@@ -156,7 +156,7 @@ class MyCustomReporter implements Reporter {
     <body>
       <h2>Test Execution Report</h2>
       <div class="summary">
-        <div class="card"><strong>Total</strong><p>${total}</p></div>
+        <div class="card"><strong>Total tests ran</strong><p>${total}</p></div>
         <div class="card passed"><strong>Passed</strong><p>${passed}</p></div>
         <div class="card failed"><strong>Failed</strong><p>${failed}</p></div>
         <div class="card flaky"><strong>Flaky</strong><p>${flakyCount}</p></div>
