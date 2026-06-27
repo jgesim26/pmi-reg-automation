@@ -19,3 +19,5 @@ playwright-report/
 blob-report/
 # Generated each run by custom-reporter.ts (large, embeds base64 screenshots)
 custom-report.html
+# Machine-readable run summary emitted alongside the report (for the emailer)
+report-summary.json

@@ -8,7 +8,8 @@
     "auth:generate": "ts-node generate-auth-state.ts",
     "test": "npx playwright test --reporter=list",
     "test:smoke": "npx playwright test tests/website-analysis.spec.ts --reporter=list",
-    "test:stage": "npx playwright test tests/stage-full.spec.ts --reporter=list"
+    "test:stage": "npx playwright test tests/stage-full.spec.ts --reporter=list",
+    "email:report": "ts-node send-report-email.ts"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +18,9 @@
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@types/node": "^22.19.8",
+    "@types/nodemailer": "^8.0.1",
     "dotenv": "^17.4.1",
+    "nodemailer": "^9.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
