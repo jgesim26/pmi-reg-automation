@@ -47,6 +47,20 @@ jobs:
         run: |
           echo "Findings run finished with outcome ${{ steps.findings.outcome }} (report-only, non-blocking)"
 
+      # Email the findings report. Every run of this workflow is scheduled or
+      # manual, so no event gating is needed. Skips quietly if MAIL_* secrets
+      # are unset.
+      - name: Email findings report
+        if: ${{ !cancelled() }}
+        env:
+          MAIL_USER: ${{ secrets.MAIL_USER }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+        run: npx ts-node send-report-email.ts
+
       - name: Upload HTML report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
