@@ -112,23 +112,23 @@ class MyCustomReporter implements Reporter {
       const hasReason = res.reason && res.reason !== 'Passed' && res.reason !== '—';
       return `
       <tr data-status="${bucket}" data-flaky="${res.flaky ? 'true' : 'false'}">
-        <td class="subject">
+        <td class="subject" data-label="Page / Area">
           <div class="subject-page">${esc(res.page)}</div>
           <div class="subject-area">${esc(res.area)}</div>
         </td>
-        <td class="name-cell">
+        <td class="name-cell" data-label="Test">
           <span class="kind ${res.kind}">${res.kind}</span>
           <div class="scenario">${esc(res.scenario)}</div>
         </td>
-        <td><code>${esc(res.specFile)}</code></td>
-        <td>${res.url ? `<a href="${esc(res.url)}" target="_blank" rel="noreferrer" class="route">${esc(res.url)}</a>` : '<span class="muted">—</span>'}</td>
-        <td class="status-col">
+        <td data-label="Spec File"><code>${esc(res.specFile)}</code></td>
+        <td data-label="Route">${res.url ? `<a href="${esc(res.url)}" target="_blank" rel="noreferrer" class="route">${esc(res.url)}</a>` : '<span class="muted">—</span>'}</td>
+        <td class="status-col" data-label="Status">
           <span class="status-pill ${res.status}"><span class="dot"></span>${res.status.toUpperCase()}</span>
           ${res.flaky ? `<span class="status-pill flaky" title="passed after ${res.retry} ${res.retry === 1 ? 'retry' : 'retries'}">⚠ FLAKY · ${res.retry}×</span>` : ''}
         </td>
-        <td class="num">${res.duration}s</td>
-        <td class="ts">${esc(res.started)}</td>
-        <td class="reason-cell">
+        <td class="num" data-label="Duration">${res.duration}s</td>
+        <td class="ts" data-label="Started">${esc(res.started)}</td>
+        <td class="reason-cell" data-label="Reason / Screenshot">
           ${hasReason ? `<div class="reason ${bucket}">${esc(res.reason)}</div>` : '<span class="muted">—</span>'}
           ${res.screenshot ? `
             <div class="screenshot-container">
@@ -288,6 +288,55 @@ class MyCustomReporter implements Reporter {
     .lightbox { position: fixed; inset: 0; background: rgba(15,23,42,.82); display: none; place-items: center; z-index: 50; padding: 32px; cursor: zoom-out; }
     .lightbox.open { display: grid; }
     .lightbox img { max-width: 95vw; max-height: 92vh; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+
+    /* ---- Responsive: tablet ---- */
+    @media (max-width: 720px) {
+      .wrap { padding: 18px 14px 48px; }
+      header.report-head { padding: 22px 20px; border-radius: 14px; }
+      .head-left h1 { font-size: 18px; }
+      .head-left .sub { gap: 10px 16px; }
+      .verdict { width: 100%; justify-content: center; }
+      .summary { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .card.rate { grid-column: 1 / -1; }
+      .card .value { font-size: 26px; }
+      .toolbar { gap: 10px; }
+      .search { margin-left: 0; flex: 1 1 100%; }
+      .search input { width: 100%; }
+
+      /* Collapse the 8-column table into one labeled card per test row. */
+      .table-wrap { border: none; background: transparent; box-shadow: none; overflow: visible; }
+      table, thead, tbody, tr, td { display: block; width: 100%; }
+      thead { position: absolute; left: -9999px; }  /* visually hide header, keep a11y */
+      tbody tr {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+        box-shadow: var(--shadow); margin-bottom: 14px; padding: 6px 2px; overflow: hidden;
+      }
+      tbody tr:hover { background: var(--surface); }
+      tbody tr:last-child td { border-bottom: none; }
+      tbody td {
+        display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left;
+        padding: 11px 16px; border-bottom: 1px solid var(--line-soft);
+      }
+      tbody td::before {
+        content: attr(data-label); font-size: 10px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .05em; color: var(--faint);
+      }
+      tbody td.subject::before { display: none; }  /* page name is its own heading */
+      .subject-page { font-size: 16px; }
+      .name-cell, .reason-cell { max-width: none; }
+      .reason, .scenario { align-self: stretch; }  /* long text spans the card */
+      .num { text-align: left; }
+      a.route { word-break: break-all; }
+      .empty-row td { display: block; }
+      .empty-row td::before { display: none; }
+    }
+
+    /* ---- Responsive: small phone ---- */
+    @media (max-width: 420px) {
+      .summary { grid-template-columns: 1fr; }
+      .card.rate { grid-column: auto; }
+      .head-left .sub { flex-direction: column; gap: 4px; }
+    }
   </style>
 </head>
 <body>
