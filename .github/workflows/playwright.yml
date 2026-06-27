@@ -49,12 +49,31 @@ jobs:
           PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }}
         run: npx playwright test tests/system-check.spec.ts tests/navigation.spec.ts tests/matrix.spec.ts tests/website-search-filters.spec.ts tests/validation.spec.ts
 
+      # Email the status report (custom-report.html). Runs even when tests fail
+      # (!cancelled), so the digest always goes out. Gated to the scheduled run
+      # and manual dispatch to avoid an email on every push/PR — to email on all
+      # events, drop the github.event_name condition. Skips quietly if the MAIL_*
+      # secrets are not configured.
+      - name: Email status report
+        if: ${{ !cancelled() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
+        env:
+          MAIL_USER: ${{ secrets.MAIL_USER }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+        run: npx ts-node send-report-email.ts
+
       - name: Upload HTML report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
+          path: |
+            playwright-report/
+            custom-report.html
+            report-summary.json
           retention-days: 14
 
       - name: Upload screenshots

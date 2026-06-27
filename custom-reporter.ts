@@ -171,8 +171,21 @@ class MyCustomReporter implements Reporter {
     </body>
     </html>`;
 
+    // Emit a tiny machine-readable summary next to the HTML so downstream steps
+    // (e.g. the email sender) can show clean counts without parsing the report.
+    const summaryPath = path.resolve('report-summary.json');
+    const summary = {
+      total,
+      passed,
+      failed,
+      flaky: flakyCount,
+      status: failed > 0 ? 'failed' : 'passed',
+      finishedAt: new Date().toISOString(),
+    };
+
     try {
       fs.writeFileSync(reportPath, html);
+      fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2));
       console.log(`\n✨ Report saved: ${reportPath}`);
 
       if (!process.env.CI) {
