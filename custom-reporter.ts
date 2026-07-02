@@ -17,6 +17,7 @@ class MyCustomReporter implements Reporter {
     'navigation.spec.ts': 'Sidebar Navigation',
     'matrix.spec.ts': 'Location / Brand Matrix',
     'website-analysis.spec.ts': 'Website Analysis',
+    'detail-crawl.spec.ts': 'Detail Page Crawl',
     'stage-full.spec.ts': 'Stage',
     'duplicate-check.spec.ts': 'Duplicate Check',
     'auth.setup.ts': 'Authentication',
